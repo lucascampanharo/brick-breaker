@@ -12,11 +12,15 @@ A tela inicial é o primeiro contato do usuário com o jogo. Nela são apresenta
 - **Configurações:** permite personalizar algumas características dos blocos;
 - **Criadores:** apresenta a equipe responsável pelo desenvolvimento do projeto.
 
+![Tela Inicial](/docs/assets/imgs/tela_inicial.png)
+
 ## 2. Tela de Criadores
 
 A tela de criadores apresenta os nomes dos integrantes da equipe responsável pelo desenvolvimento do projeto.
 
 Também possui um botão de retorno, permitindo voltar à tela anterior e acessar novamente as demais opções do menu.
+
+![Tela de Criadores](/docs/assets/imgs/criadores.png)
 
 ## 3. Tela de Configurações
 
@@ -29,6 +33,8 @@ As opções disponíveis são:
 
 Para definir as preferências, basta selecionar uma das opções disponíveis em cada configuração.
 
+![Tela de Configurações](/docs/assets/imgs/configuracoes.png)
+
 ## 4. Telas das Fases
 
 Cada fase possui uma distribuição diferente dos blocos, fazendo com que o nível de dificuldade aumente ao longo do jogo.
@@ -38,6 +44,16 @@ Apesar dessas diferenças, todas as fases mantêm os principais elementos do **B
 - **Blocos:** devem ser destruídos durante a partida;
 - **Bola:** utilizada para atingir e destruir os blocos. O jogador deve evitar que ela ultrapasse a plataforma;
 - **Plataforma:** controlada pelo jogador e utilizada para rebater a bola.
+
+![Fase 1](/docs/assets/imgs/fase1.png)
+
+![Fase 2](/docs/assets/imgs/fase2.png)
+
+![Fase 3](/docs/assets/imgs/fase3.png)
+
+![Fase 4](/docs/assets/imgs/fase4.png)
+
+![Fase 5](/docs/assets/imgs/fase5.png)
 
 ## 5. Tela Final
 
@@ -50,6 +66,8 @@ O jogador também pode escolher entre:
 - jogar novamente a mesma fase;
 - avançar para a próxima fase;
 - sair da partida e retornar à tela inicial.
+
+![Tela Final](/docs/assets/imgs/tela_avancar.png)
 
 ## Consistência visual e estrutural
 
