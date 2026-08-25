@@ -1,17 +1,13 @@
 # Brick Breaker
 
-## Integrantes
+Projeto Integrador VI-A - Entrega da 1ª etapa do grupo 8.
 
-- Nome do Integrante 1
-- Nome do Integrante 2
-- Nome do Integrante 3
+### Objetivo do Projeto
 
-## Sobre o projeto
+O objetivo do projeto é criar o jogo Brick Breaker para celular, aplicando os conhecimentos aprendidos nas matérias da disciplina.
 
-Projeto de desenvolvimento de um jogo Brick Breaker para dispositivos móveis.
+Arquivos adicionados na pasta docs.
 
-## Documentação
-
-- [Ambiente de desenvolvimento e tecnologias](docs/ambiente-tecnologias.md)
-- [Wireframes](docs/wireframes.md)
-- [Construção da parede de blocos](docs/parede-de-blocos.md)
+- [Definições do Projeto](docs/definicoes-projeto.md): Arquivo com as tecnologias escolhidas e com a definição de como será gerada a APK;
+- [Construção Parede de Blocos](docs/construcao-parede-de-blocos.md): Arquivo com a definição de como será estruturada a parede de blocos do jogo;
+- [Wireframes das Telas](docs/wireframes.md): Arquivo com o design criado para o jogo, todas as imagens foram adicionadas na pasta assets/imgs;
