@@ -8,6 +8,6 @@ O objetivo do projeto é criar o jogo Brick Breaker para celular, aplicando os c
 
 Arquivos adicionados na pasta docs.
 
-- [Definições do Projeto](docs/definicoes-projeto.md): Arquivo com as tecnologias escolhidas e com a definição de como será gerada a APK;
+- [Definições do Projeto](docs/ definicoes-projeto.md): Arquivo com as tecnologias escolhidas e com a definição de como será gerada a APK;
 - [Construção Parede de Blocos](docs/construcao-parede-de-blocos.md): Arquivo com a definição de como será estruturada a parede de blocos do jogo;
 - [Wireframes das Telas](docs/wireframes.md): Arquivo com o design criado para o jogo, todas as imagens foram adicionadas na pasta assets/imgs;
