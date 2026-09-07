@@ -1,0 +1,9 @@
+78098b89c88a74ebe8c20117b8754620
+::res://::1788800180
+::res://assets/::1788799970
+wallpaper.png::CompressedTexture2D::412669348231761311::1788799844::1788799970::1::::<><><>0<>0<>9cefe667c1901e967eecb5cd26b8233c<>res://.godot/imported/wallpaper.png-614d70b8dc59f82500f41fbfdedc437a.ctex::
+::res://scenes/::1788798552
+main_menu.tscn::PackedScene::-1::1788798552::0::1::::<><><>0<>0<><>::res://scripts/main_menu.gd
+::res://scripts/::1788799970
+app_background.gd::GDScript::574504645712846495::1788799941::0::1::::<>CanvasLayer<><>0<>0<><>::
+main_menu.gd::GDScript::3898072868210238769::1788799953::0::1::::<>Control<><>0<>0<><>::
