@@ -1,0 +1,142 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxButtonNormal"]
+bg_color = Color(0.188235, 0.219608, 0.254902, 0.96)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxButtonHover"]
+bg_color = Color(0.34902, 0.376471, 0.403922, 0.98)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxButtonPressed"]
+bg_color = Color(0.32549, 0.203922, 0.513725, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="Creators" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 40
+
+[node name="Layout" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TopSpacer" type="Control" parent="Margin/Layout"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Title" type="Label" parent="Margin/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_font_sizes/font_size = 56
+text = "Criadores"
+horizontal_alignment = 1
+
+[node name="TitleGap" type="Control" parent="Margin/Layout"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="MembersCenter" type="CenterContainer" parent="Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Members" type="VBoxContainer" parent="Margin/Layout/MembersCenter"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Member1" type="Button" parent="Margin/Layout/MembersCenter/Members"]
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_hover_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_pressed_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxButtonNormal")
+theme_override_styles/hover = SubResource("StyleBoxButtonHover")
+theme_override_styles/pressed = SubResource("StyleBoxButtonPressed")
+text = "Nome do integrante 1"
+focus_mode = 0
+
+[node name="Member2" type="Button" parent="Margin/Layout/MembersCenter/Members"]
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_hover_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_pressed_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxButtonNormal")
+theme_override_styles/hover = SubResource("StyleBoxButtonHover")
+theme_override_styles/pressed = SubResource("StyleBoxButtonPressed")
+text = "Nome do integrante 2"
+focus_mode = 0
+
+[node name="Member3" type="Button" parent="Margin/Layout/MembersCenter/Members"]
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_hover_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_pressed_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxButtonNormal")
+theme_override_styles/hover = SubResource("StyleBoxButtonHover")
+theme_override_styles/pressed = SubResource("StyleBoxButtonPressed")
+text = "Nome do integrante 3"
+focus_mode = 0
+
+[node name="Member4" type="Button" parent="Margin/Layout/MembersCenter/Members"]
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_hover_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_pressed_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxButtonNormal")
+theme_override_styles/hover = SubResource("StyleBoxButtonHover")
+theme_override_styles/pressed = SubResource("StyleBoxButtonPressed")
+text = "Nome do integrante 4"
+focus_mode = 0
+
+[node name="BottomSpacer" type="Control" parent="Margin/Layout"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Back" type="Button" parent="Margin/Layout"]
+custom_minimum_size = Vector2(240, 68)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_hover_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_colors/font_pressed_color = Color(0.462745, 0.670588, 0.682353, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxButtonNormal")
+theme_override_styles/hover = SubResource("StyleBoxButtonHover")
+theme_override_styles/pressed = SubResource("StyleBoxButtonPressed")
+text = "Voltar"
+focus_mode = 0
