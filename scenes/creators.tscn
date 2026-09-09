@@ -68,58 +68,70 @@ size_flags_vertical = 3
 [node name="Members" type="VBoxContainer" parent="Margin/Layout/MembersCenter"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 18
+theme_override_constants/separation = 16
 
 [node name="Member1" type="Button" parent="Margin/Layout/MembersCenter/Members"]
-custom_minimum_size = Vector2(0, 76)
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
 theme_override_colors/font_hover_color = Color(0.462745, 0.670588, 0.682353, 1)
 theme_override_colors/font_pressed_color = Color(0.462745, 0.670588, 0.682353, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxButtonNormal")
 theme_override_styles/hover = SubResource("StyleBoxButtonHover")
 theme_override_styles/pressed = SubResource("StyleBoxButtonPressed")
-text = "Nome do integrante 1"
+text = "Elinéia Rita Bassani"
+alignment = 1
+clip_text = true
 focus_mode = 0
 
 [node name="Member2" type="Button" parent="Margin/Layout/MembersCenter/Members"]
-custom_minimum_size = Vector2(0, 76)
+custom_minimum_size = Vector2(0, 92)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
 theme_override_colors/font_hover_color = Color(0.462745, 0.670588, 0.682353, 1)
 theme_override_colors/font_pressed_color = Color(0.462745, 0.670588, 0.682353, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxButtonNormal")
 theme_override_styles/hover = SubResource("StyleBoxButtonHover")
 theme_override_styles/pressed = SubResource("StyleBoxButtonPressed")
-text = "Nome do integrante 2"
+text = "Lucas Ferreira\nGritti Campanharo"
+alignment = 1
+clip_text = true
 focus_mode = 0
 
 [node name="Member3" type="Button" parent="Margin/Layout/MembersCenter/Members"]
-custom_minimum_size = Vector2(0, 76)
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
 theme_override_colors/font_hover_color = Color(0.462745, 0.670588, 0.682353, 1)
 theme_override_colors/font_pressed_color = Color(0.462745, 0.670588, 0.682353, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxButtonNormal")
 theme_override_styles/hover = SubResource("StyleBoxButtonHover")
 theme_override_styles/pressed = SubResource("StyleBoxButtonPressed")
-text = "Nome do integrante 3"
+text = "Luís Miguel Jacobus"
+alignment = 1
+clip_text = true
 focus_mode = 0
 
 [node name="Member4" type="Button" parent="Margin/Layout/MembersCenter/Members"]
-custom_minimum_size = Vector2(0, 76)
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.462745, 0.670588, 0.682353, 1)
 theme_override_colors/font_hover_color = Color(0.462745, 0.670588, 0.682353, 1)
 theme_override_colors/font_pressed_color = Color(0.462745, 0.670588, 0.682353, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxButtonNormal")
 theme_override_styles/hover = SubResource("StyleBoxButtonHover")
 theme_override_styles/pressed = SubResource("StyleBoxButtonPressed")
-text = "Nome do integrante 4"
+text = "Sanny Belisário"
+alignment = 1
+clip_text = true
 focus_mode = 0
 
 [node name="BottomSpacer" type="Control" parent="Margin/Layout"]
