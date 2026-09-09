@@ -2,6 +2,7 @@ extends Control
 
 const TITLE_TEXT := "Brick Breaker"
 const MENU_OPTIONS := ["Iniciar", "Configurações", "Criadores"]
+const LEVEL_1_SCENE_PATH := "res://scenes/level_1.tscn"
 
 const COLOR_TITLE := Color("76ABAE")
 const COLOR_BUTTON_NORMAL := Color("303841")
@@ -98,7 +99,7 @@ func _make_button_style(base_color: Color) -> StyleBoxFlat:
 
 
 func _on_start_pressed() -> void:
-	print("Iniciar pressionado")
+	get_tree().change_scene_to_file(LEVEL_1_SCENE_PATH)
 
 
 func _on_settings_pressed() -> void:
