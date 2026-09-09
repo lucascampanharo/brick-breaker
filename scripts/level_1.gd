@@ -10,10 +10,12 @@ const SCREEN_SIZE := Vector2(720, 1280)
 
 const COLOR_BACKGROUND := Color("222831")
 const COLOR_HUD_TEXT := Color("76ABAE")
-const COLOR_MESSAGE := Color("EEEEEE")
-const COLOR_BUTTON_NORMAL := Color("303841")
-const COLOR_BUTTON_HOVER := Color("596067")
-const COLOR_BUTTON_PRESSED := Color("533483")
+
+const COLOR_PANEL_BG := Color("2B2F3A")
+const COLOR_PANEL_TEXT := Color("EEEEEE")
+const COLOR_PILL := Color("5FA8A5")
+const COLOR_PILL_HOVER := Color("4C8D8A")
+const COLOR_PILL_PRESSED := Color("3B706E")
 
 const BRICK_ROWS := 6
 const BRICK_COLS := 7
@@ -49,6 +51,7 @@ const STARTING_LIVES := 3
 var lives := STARTING_LIVES
 var score := 0
 var bricks_remaining := 0
+var bricks_destroyed := 0
 var game_over := false
 
 var ball: CharacterBody2D
@@ -56,7 +59,7 @@ var paddle: CharacterBody2D
 
 var score_label: Label
 var lives_label: Label
-var message_label: Label
+var destroyed_count_label: Label
 var overlay: CenterContainer
 
 
@@ -143,10 +146,18 @@ func _reset_ball() -> void:
 
 
 func _build_hud() -> void:
+	# A UI precisa estar sob um CanvasLayer (para as âncoras resolverem contra
+	# o viewport, já que um Node2D puro não fornece essa área de referência) e
+	# usar set_anchors_AND_OFFSETS_preset (set_anchors_preset sozinho só move
+	# as âncoras preservando o retângulo atual, que para um Control novo é
+	# (0, 0) — o controle nunca chega a esticar para tela cheia).
+	var hud_layer := CanvasLayer.new()
+	add_child(hud_layer)
+
 	var hud := Control.new()
-	hud.set_anchors_preset(Control.PRESET_FULL_RECT)
 	hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(hud)
+	hud_layer.add_child(hud)
+	hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	score_label = Label.new()
 	score_label.position = Vector2(24, 24)
@@ -161,52 +172,76 @@ func _build_hud() -> void:
 	hud.add_child(lives_label)
 
 	overlay = CenterContainer.new()
-	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.visible = false
 	hud.add_child(overlay)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	var overlay_box := VBoxContainer.new()
-	overlay_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	overlay_box.add_theme_constant_override("separation", 24)
-	overlay.add_child(overlay_box)
+	overlay.add_child(_build_end_panel())
 
-	message_label = Label.new()
-	message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	message_label.add_theme_font_size_override("font_size", 40)
-	message_label.add_theme_color_override("font_color", COLOR_MESSAGE)
-	overlay_box.add_child(message_label)
+
+func _build_end_panel() -> PanelContainer:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", _make_box_style(COLOR_PANEL_BG, 25, 30))
+
+	var content := VBoxContainer.new()
+	content.custom_minimum_size = Vector2(297, 0)
+	content.add_theme_constant_override("separation", 21)
+	panel.add_child(content)
+
+	var title := Label.new()
+	title.text = "Blocos destruídos"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
+	content.add_child(title)
+
+	var count_box := PanelContainer.new()
+	count_box.add_theme_stylebox_override("panel", _make_box_style(COLOR_PILL, 19, 13))
+	content.add_child(count_box)
+
+	destroyed_count_label = Label.new()
+	destroyed_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	destroyed_count_label.add_theme_font_size_override("font_size", 30)
+	destroyed_count_label.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
+	count_box.add_child(destroyed_count_label)
 
 	var actions := VBoxContainer.new()
-	actions.alignment = BoxContainer.ALIGNMENT_CENTER
-	actions.add_theme_constant_override("separation", 16)
-	actions.add_child(_build_action_button("Jogar novamente", _restart_level))
-	actions.add_child(_build_action_button("Menu inicial", _return_to_menu))
-	overlay_box.add_child(actions)
+	actions.add_theme_constant_override("separation", 15)
+	actions.add_child(_build_pill_button("Jogar novamente", _restart_level))
+	actions.add_child(_build_pill_button("Ir para próxima fase", _on_next_level_pressed))
+	actions.add_child(_build_pill_button("Sair", _return_to_menu))
+	content.add_child(actions)
+
+	return panel
 
 
-func _build_action_button(label_text: String, callback: Callable) -> Button:
+func _build_pill_button(label_text: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = label_text
-	button.custom_minimum_size = Vector2(260, 64)
+	button.custom_minimum_size = Vector2(0, 59)
 	button.focus_mode = Control.FOCUS_NONE
-	button.add_theme_font_size_override("font_size", 24)
-	button.add_theme_color_override("font_color", COLOR_HUD_TEXT)
-	button.add_theme_color_override("font_hover_color", COLOR_HUD_TEXT)
-	button.add_theme_color_override("font_pressed_color", COLOR_HUD_TEXT)
-	button.add_theme_stylebox_override("normal", _make_button_style(COLOR_BUTTON_NORMAL))
-	button.add_theme_stylebox_override("hover", _make_button_style(COLOR_BUTTON_HOVER))
-	button.add_theme_stylebox_override("pressed", _make_button_style(COLOR_BUTTON_PRESSED))
+	button.add_theme_font_size_override("font_size", 23)
+	button.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
+	button.add_theme_color_override("font_hover_color", COLOR_PANEL_TEXT)
+	button.add_theme_color_override("font_pressed_color", COLOR_PANEL_TEXT)
+	button.add_theme_stylebox_override("normal", _make_box_style(COLOR_PILL, 30, 13))
+	button.add_theme_stylebox_override("hover", _make_box_style(COLOR_PILL_HOVER, 30, 13))
+	button.add_theme_stylebox_override("pressed", _make_box_style(COLOR_PILL_PRESSED, 30, 13))
 	button.pressed.connect(callback)
 	return button
 
 
-func _make_button_style(base_color: Color) -> StyleBoxFlat:
+func _make_box_style(base_color: Color, corner_radius: int, content_padding: int) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = base_color
-	style.corner_radius_top_left = 12
-	style.corner_radius_top_right = 12
-	style.corner_radius_bottom_left = 12
-	style.corner_radius_bottom_right = 12
+	style.corner_radius_top_left = corner_radius
+	style.corner_radius_top_right = corner_radius
+	style.corner_radius_bottom_left = corner_radius
+	style.corner_radius_bottom_right = corner_radius
+	style.content_margin_left = content_padding
+	style.content_margin_right = content_padding
+	style.content_margin_top = content_padding
+	style.content_margin_bottom = content_padding
 	return style
 
 
@@ -227,9 +262,10 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_brick_destroyed(_brick) -> void:
 	score += 10
 	bricks_remaining -= 1
+	bricks_destroyed += 1
 	_update_hud()
 	if bricks_remaining <= 0:
-		_finish_level("Fase concluída!")
+		_finish_level()
 
 
 func _on_ball_hit_brick(brick) -> void:
@@ -244,21 +280,26 @@ func _on_ball_missed() -> void:
 	lives = max(lives - 1, 0)
 	_update_hud()
 	if lives <= 0:
-		_finish_level("Fim de jogo")
+		_finish_level()
 	else:
 		_reset_ball()
 
 
-func _finish_level(text: String) -> void:
+func _finish_level() -> void:
 	game_over = true
 	ball.reset(ball.position)
 	ball.set_physics_process(false)
-	message_label.text = text
+	destroyed_count_label.text = str(bricks_destroyed)
 	overlay.visible = true
 
 
 func _restart_level() -> void:
 	get_tree().reload_current_scene()
+
+
+func _on_next_level_pressed() -> void:
+	# Ainda não há uma próxima fase implementada no projeto.
+	print("Próxima fase ainda não disponível")
 
 
 func _return_to_menu() -> void:
