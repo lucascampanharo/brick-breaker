@@ -22,6 +22,11 @@ func setup(size: Vector2, screen_width: float, wall_margin: float) -> void:
 	add_child(collision)
 
 	add_to_group("paddle")
+
+	# A plataforma nunca deve ser empurrada por outros corpos (ex.: a bola);
+	# sua posição é controlada só pelo input e pelo clamp abaixo.
+	collision_mask = 0
+
 	queue_redraw()
 
 
@@ -29,10 +34,9 @@ func _draw() -> void:
 	draw_rect(Rect2(-paddle_size / 2.0, paddle_size), COLOR)
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	var direction := Input.get_axis("ui_left", "ui_right")
-	velocity.x = direction * SPEED
-	move_and_slide()
+	position.x += direction * SPEED * delta
 	position.x = clamp(position.x, min_x, max_x)
 
 
