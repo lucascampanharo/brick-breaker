@@ -51,8 +51,6 @@ func _build_title() -> Label:
 	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 64)
 	title.add_theme_color_override("font_color", COLOR_TITLE)
-	#title.add_theme_color_override("font_outline_color", Color("000000"))
-	#title.add_theme_constant_override("outline_size", 6)
 	return title
 
 

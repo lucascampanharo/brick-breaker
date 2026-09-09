@@ -1,1 +1,3 @@
 res://scripts/paddle.gd
+res://scripts/main_menu.gd
+res://scripts/level_1.gd

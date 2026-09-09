@@ -238,7 +238,10 @@ func _on_ball_hit_brick(brick) -> void:
 
 
 func _on_ball_missed() -> void:
-	lives -= 1
+	if game_over:
+		return
+
+	lives = max(lives - 1, 0)
 	_update_hud()
 	if lives <= 0:
 		_finish_level("Fim de jogo")
@@ -248,6 +251,8 @@ func _on_ball_missed() -> void:
 
 func _finish_level(text: String) -> void:
 	game_over = true
+	ball.reset(ball.position)
+	ball.set_physics_process(false)
 	message_label.text = text
 	overlay.visible = true
 
