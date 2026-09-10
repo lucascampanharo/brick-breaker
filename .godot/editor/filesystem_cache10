@@ -1,5 +1,5 @@
 78098b89c88a74ebe8c20117b8754620
-::res://::1789068814
+::res://::1789069678
 README.md::TextFile::-1::1788914481::0::1::::<><><>0<>0<><>::
 ::res://assets/::1789067574
 wallpaper.png::CompressedTexture2D::412669348231761311::1788914481::1788917136::1::::<><><>0<>0<>9cefe667c1901e967eecb5cd26b8233c<>res://.godot/imported/wallpaper.png-614d70b8dc59f82500f41fbfdedc437a.ctex::
@@ -23,7 +23,7 @@ tela_inicial.png::CompressedTexture2D::1289003726502834459::1788914481::17889171
 ::res://scenes/::1788915992
 creators.tscn::PackedScene::-1::1788984130::0::1::::<><><>0<>0<><>::res://scripts/creators.gd
 main_menu.tscn::PackedScene::-1::1788914481::0::1::::<><><>0<>0<><>::res://scripts/main_menu.gd
-::res://scripts/::1789068039
+::res://scripts/::1789068825
 app_background.gd::GDScript::574504645712846495::1788914482::0::1::::<>CanvasLayer<><>0<>0<><>::
-creators.gd::GDScript::6781357486527242958::1789068757::0::1::::<>Control<><>0<>0<><>::
-main_menu.gd::GDScript::3898072868210238769::1788914482::0::1::::<>Control<><>0<>0<><>::
+creators.gd::GDScript::6781357486527242958::1789068825::0::1::::<>Control<><>0<>0<><>::
+main_menu.gd::GDScript::3898072868210238769::1789069562::0::1::::<>Control<><>0<>0<><>::

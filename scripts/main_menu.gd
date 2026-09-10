@@ -106,4 +106,4 @@ func _on_settings_pressed() -> void:
 
 
 func _on_creators_pressed() -> void:
-	print("Criadores pressionado")
+	get_tree().change_scene_to_file("res://scenes/creators.tscn")

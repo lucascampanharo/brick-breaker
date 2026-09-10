@@ -252,6 +252,8 @@ func _build_back_button() -> TextureButton:
 			button.modulate = Color(1, 1, 1, 0.85)
 	)
 
+	button.pressed.connect(_on_back_pressed)
+
 	return button
 
 
@@ -270,3 +272,6 @@ func _make_button_style(base_color: Color) -> StyleBoxFlat:
 	style.corner_radius_bottom_right = radius
 
 	return style
+
+func _on_back_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
