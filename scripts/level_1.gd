@@ -8,8 +8,8 @@ const MAIN_MENU_SCENE_PATH := "res://scenes/main_menu.tscn"
 
 const SCREEN_SIZE := Vector2(720, 1280)
 
-const COLOR_BACKGROUND := Color("222831")
 const COLOR_HUD_TEXT := Color("76ABAE")
+const COLOR_BACKGROUND_DIM := Color(0, 0, 0, 0.1)
 
 const COLOR_PANEL_BG := Color("2B2F3A")
 const COLOR_PANEL_TEXT := Color("EEEEEE")
@@ -64,7 +64,9 @@ var overlay: CenterContainer
 
 
 func _ready() -> void:
-	_build_background()
+	# A imagem de fundo em si já vem do autoload AppBackground, igual à tela
+	# inicial; aqui só escurecemos um pouco para dar contraste à fase.
+	_build_background_dim()
 	_build_walls()
 	_build_bricks()
 	_build_paddle()
@@ -73,12 +75,12 @@ func _ready() -> void:
 	_update_hud()
 
 
-func _build_background() -> void:
-	var background := ColorRect.new()
-	background.color = COLOR_BACKGROUND
-	background.size = SCREEN_SIZE
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(background)
+func _build_background_dim() -> void:
+	var dim := ColorRect.new()
+	dim.color = COLOR_BACKGROUND_DIM
+	dim.size = SCREEN_SIZE
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(dim)
 
 
 func _build_walls() -> void:
