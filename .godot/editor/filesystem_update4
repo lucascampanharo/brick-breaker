@@ -1,3 +1,4 @@
-res://scripts/paddle.gd
+res://scripts/creators.gd
 res://scripts/main_menu.gd
 res://scripts/level_1.gd
+res://scripts/paddle.gd
