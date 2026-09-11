@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.7", "Mobile")
 [autoload]
 
 AppBackground="*res://scripts/app_background.gd"
+GameSettings="*res://scripts/game_settings.gd"
 
 [display]
 

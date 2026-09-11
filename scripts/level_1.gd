@@ -17,30 +17,10 @@ const COLOR_PILL := Color("5FA8A5")
 const COLOR_PILL_HOVER := Color("4C8D8A")
 const COLOR_PILL_PRESSED := Color("3B706E")
 
-const BRICK_ROWS := 6
-const BRICK_COLS := 7
-const BRICK_SIZE := Vector2(88, 34)
 const BRICK_GAP := Vector2(8, 8)
 const BRICK_TOP_MARGIN := 160.0
-
-const BRICK_ROW_COLORS := [
-	Color("EF5350"),
-	Color("FFA726"),
-	Color("FFEE58"),
-	Color("66BB6A"),
-	Color("42A5F5"),
-	Color("AB47BC"),
-]
-
-# Matriz de dados da parede: 1 = bloco ativo (visível), 0 = espaço vazio.
-const BRICK_LAYOUT := [
-	[1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1],
-]
+const BRICK_BOTTOM := 640.0
+const BRICK_SIDE_MARGIN := 12.0
 
 const WALL_THICKNESS := 24.0
 const PADDLE_SIZE := Vector2(140, 28)
@@ -53,6 +33,9 @@ var score := 0
 var bricks_remaining := 0
 var bricks_destroyed := 0
 var game_over := false
+
+# Matriz de dados da parede: 1 = bloco ativo, 0 = espaço vazio.
+var brick_layout: Array[Array] = []
 
 var ball: CharacterBody2D
 var paddle: CharacterBody2D
@@ -104,22 +87,36 @@ func _build_wall(size: Vector2, center: Vector2) -> void:
 
 func _build_bricks() -> void:
 	bricks_remaining = 0
-	var grid_width := BRICK_COLS * BRICK_SIZE.x + (BRICK_COLS - 1) * BRICK_GAP.x
-	var start_x := (SCREEN_SIZE.x - grid_width) / 2.0 + BRICK_SIZE.x / 2.0
+	var rows := GameSettings.get_rows()
+	var columns := GameSettings.get_columns()
+	var colors := GameSettings.get_colors()
+	var brick_size := Vector2(
+		(SCREEN_SIZE.x - 2.0 * BRICK_SIDE_MARGIN - (columns - 1) * BRICK_GAP.x) / columns,
+		(BRICK_BOTTOM - BRICK_TOP_MARGIN - (rows - 1) * BRICK_GAP.y) / rows
+	)
+	var start_x := BRICK_SIDE_MARGIN + brick_size.x / 2.0
+	var start_y := BRICK_TOP_MARGIN + brick_size.y / 2.0
 
-	for row in BRICK_ROWS:
-		for col in BRICK_COLS:
-			if BRICK_LAYOUT[row][col] == 0:
+	brick_layout.clear()
+	for row in rows:
+		var cells: Array[int] = []
+		cells.resize(columns)
+		cells.fill(1)
+		brick_layout.append(cells)
+
+	for row in rows:
+		for col in columns:
+			if brick_layout[row][col] == 0:
 				continue
 
 			var brick := StaticBody2D.new()
 			brick.set_script(BRICK_SCRIPT)
 			brick.position = Vector2(
-				start_x + col * (BRICK_SIZE.x + BRICK_GAP.x),
-				BRICK_TOP_MARGIN + row * (BRICK_SIZE.y + BRICK_GAP.y)
+				start_x + col * (brick_size.x + BRICK_GAP.x),
+				start_y + row * (brick_size.y + BRICK_GAP.y)
 			)
 			add_child(brick)
-			brick.setup(BRICK_SIZE, BRICK_ROW_COLORS[row % BRICK_ROW_COLORS.size()])
+			brick.setup(brick_size, colors[(row * columns + col) % colors.size()])
 			brick.destroyed.connect(_on_brick_destroyed)
 			bricks_remaining += 1
 

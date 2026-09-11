@@ -13,80 +13,6 @@ const COLOR_SELECTED := Color("F15A3A")
 
 
 # ============================================================
-# PADRÕES DE BLOCOS
-# ============================================================
-
-const BLOCK_PATTERNS := [
-	"3×4", "4×4", "5×4", "6×4", "3×5",
-	"4×5", "5×5", "6×5", "3×6", "4×6",
-	"5×6", "6×6", "3×7", "4×7", "5×7",
-	"6×7", "3×8", "4×8", "5×8", "6×8"
-]
-
-var selected_pattern := "5×6"
-
-
-# ============================================================
-# PALETAS DE CORES
-# ============================================================
-
-const COLOR_PALETTES := [
-	[
-		Color("A61E35"),
-		Color("F13A1D")
-	],
-
-	[
-		Color("003B00"),
-		Color("286B0A")
-	],
-
-	[
-		Color("F477B5"),
-		Color("FFE18A")
-	],
-
-	[
-		Color("B8C584"),
-		Color("8D7C52"),
-		Color("E7A17F")
-	],
-
-	[
-		Color("652052"),
-		Color("B51E4A"),
-		Color("E8784D")
-	],
-
-	[
-		Color("C6D1D8"),
-		Color("E5E2D8"),
-		Color("75947D")
-	],
-
-	[
-		Color("32110D"),
-		Color("8C0B08"),
-		Color("E63114")
-	],
-
-	[
-		Color("59D9D1"),
-		Color("F0EA1D"),
-		Color("FFB36A")
-	],
-
-	[
-		Color("E98921"),
-		Color("F5BB29"),
-		Color("FFE98C")
-	]
-]
-
-var selected_palette := 8
-
-
-# ============================================================
 # REFERÊNCIAS
 # ============================================================
 
@@ -247,7 +173,7 @@ func _build_screen() -> void:
 	pattern_panel.add_child(pattern_grid)
 
 
-	for pattern in BLOCK_PATTERNS:
+	for pattern in GameSettings.BLOCK_PATTERNS:
 
 		_create_pattern_button(pattern)
 
@@ -326,7 +252,7 @@ func _build_screen() -> void:
 	color_panel.add_child(color_grid)
 
 
-	for i in range(COLOR_PALETTES.size()):
+	for i in range(GameSettings.COLOR_PALETTES.size()):
 
 		_create_color_button(i)
 
@@ -420,14 +346,14 @@ func _create_pattern_button(
 	button.add_theme_stylebox_override(
 		"normal",
 		_make_pattern_style(
-			pattern == selected_pattern
+			pattern == GameSettings.selected_pattern
 		)
 	)
 
 	button.add_theme_stylebox_override(
 		"hover",
 		_make_pattern_style(
-			pattern == selected_pattern
+			pattern == GameSettings.selected_pattern
 		)
 	)
 
@@ -452,11 +378,11 @@ func _select_pattern(
 	pattern: String
 ) -> void:
 
-	selected_pattern = pattern
+	GameSettings.selected_pattern = pattern
 
 	print(
 		"Padrão de blocos: ",
-		selected_pattern
+		GameSettings.selected_pattern
 	)
 
 
@@ -467,7 +393,7 @@ func _select_pattern(
 			var button := child as Button
 
 			var selected := (
-				button.text == selected_pattern
+				button.text == GameSettings.selected_pattern
 			)
 
 			button.add_theme_stylebox_override(
@@ -501,10 +427,10 @@ func _create_color_button(
 		75
 	)
 
-	button.palette = COLOR_PALETTES[index]
+	button.palette = GameSettings.COLOR_PALETTES[index]
 
 	button.selected = (
-		index == selected_palette
+		index == GameSettings.selected_palette
 	)
 
 	button.mouse_default_cursor_shape = (
@@ -527,11 +453,11 @@ func _select_palette(
 	index: int
 ) -> void:
 
-	selected_palette = index
+	GameSettings.selected_palette = index
 
 	print(
 		"Paleta selecionada: ",
-		selected_palette + 1
+		GameSettings.selected_palette + 1
 	)
 
 
@@ -547,7 +473,7 @@ func _select_palette(
 		if button:
 
 			button.selected = (
-				i == selected_palette
+				i == GameSettings.selected_palette
 			)
 
 			button.queue_redraw()

@@ -4,6 +4,8 @@ signal destroyed(brick)
 
 var brick_size := Vector2(88, 34)
 var brick_color := Color.WHITE
+var is_destroyed := false
+var collision: CollisionShape2D
 
 
 func setup(size: Vector2, color: Color) -> void:
@@ -12,7 +14,7 @@ func setup(size: Vector2, color: Color) -> void:
 
 	var shape := RectangleShape2D.new()
 	shape.size = size
-	var collision := CollisionShape2D.new()
+	collision = CollisionShape2D.new()
 	collision.shape = shape
 	add_child(collision)
 
@@ -25,5 +27,9 @@ func _draw() -> void:
 
 
 func hit() -> void:
+	if is_destroyed:
+		return
+	is_destroyed = true
+	collision.set_deferred("disabled", true)
 	destroyed.emit(self)
 	queue_free()
