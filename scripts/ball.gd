@@ -55,8 +55,11 @@ func _physics_process(delta: float) -> void:
 	if collision:
 		var collider = collision.get_collider()
 		if collider and collider.is_in_group("bricks"):
-			velocity = velocity.bounce(collision.get_normal())
+			# Mesmo nas quinas, o bloco devolve a bola na direção vertical oposta.
+			velocity.y = -velocity.y
 			brick_hit.emit(collider)
+			# Não percorre o movimento restante nem atinge outro bloco neste passo.
+			return
 		elif collider and collider.is_in_group("paddle"):
 			_bounce_off_paddle(collider)
 		else:
