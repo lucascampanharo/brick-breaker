@@ -9,6 +9,8 @@ const MENU_OPTIONS := [
 	"Criadores"
 ]
 
+const LEVEL_1_SCENE_PATH := "res://scenes/level_1.tscn"
+
 
 # ============================================================
 # CORES
@@ -286,13 +288,7 @@ func _make_button_style(
 # ============================================================
 
 func _on_start_pressed() -> void:
-
-	print("Iniciar pressionado")
-
-	# Futuramente:
-	# get_tree().change_scene_to_file(
-	#     "res://scenes/game.tscn"
-	# )
+	get_tree().change_scene_to_file(LEVEL_1_SCENE_PATH)
 
 
 # ============================================================
