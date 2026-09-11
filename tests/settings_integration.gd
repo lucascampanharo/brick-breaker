@@ -77,12 +77,67 @@ func _run() -> void:
 	for brick in get_nodes_in_group("bricks"):
 		current_scene._on_ball_hit_brick(brick)
 		current_scene._on_ball_hit_brick(brick)
-	check(current_scene.score == 150 and current_scene.bricks_destroyed == 15, "Pontuação ou destruição incorreta")
+	check(current_scene.bricks_destroyed == 15, "Contagem de destruição incorreta")
 	check(current_scene.bricks_remaining == 0 and current_scene.game_over and current_scene.overlay.visible, "Partida não encerrou")
 	current_scene._restart_level()
 	await scene_changed
-	check(current_scene.bricks_remaining == 15 and current_scene.score == 0 and current_scene.bricks_destroyed == 0 and current_scene.lives == 3, "Reinício incorreto")
+	check(current_scene.bricks_remaining == 15 and current_scene.bricks_destroyed == 0, "Reinício incorreto")
 	check(get_nodes_in_group("bricks")[0].brick_color == settings.COLOR_PALETTES[3][0], "Reinício perdeu paleta")
+	# A primeira saída pela borda inferior encerra a tentativa, sem reposicionar.
+	current_scene._on_ball_hit_brick(get_nodes_in_group("bricks")[0])
+	current_scene.ball.position = Vector2(100, 1300)
+	current_scene.ball.velocity = Vector2(0, 480)
+	current_scene.ball.launched = true
+	await physics_frame
+	await physics_frame
+	check(current_scene.game_over and current_scene.overlay.visible, "Primeira perda não abriu modal")
+	check(current_scene.ball.position.y > 1280 and current_scene.ball.velocity == Vector2.ZERO, "Perda reposicionou ou não parou a bola")
+	check(current_scene.destroyed_count_label.text == "1", "Modal perdeu contagem")
+	check(not current_scene.ball.is_physics_processing() and not current_scene.paddle.is_physics_processing(), "Física não bloqueada")
+	check(not current_scene.paddle.is_processing_unhandled_input(), "Entrada do paddle não bloqueada")
+	var stopped_position: Vector2 = current_scene.paddle.position
+	Input.action_press("ui_right")
+	var touch := InputEventScreenTouch.new()
+	touch.position = Vector2(100, 1100)
+	touch.pressed = true
+	root.push_input(touch)
+	touch.pressed = false
+	root.push_input(touch)
+	var drag := InputEventMouseMotion.new()
+	drag.position = Vector2(600, 1100)
+	drag.button_mask = MOUSE_BUTTON_MASK_LEFT
+	root.push_input(drag)
+	await physics_frame
+	await physics_frame
+	Input.action_release("ui_right")
+	check(current_scene.paddle.position == stopped_position and not current_scene.ball.launched, "Entrada atravessou modal")
+	current_scene.ball.missed.emit()
+	check(current_scene.destroyed_count_label.text == "1", "Encerramento repetido alterou contagem")
+	var buttons: Array[Node] = current_scene.overlay.find_children("*", "Button", true, false)
+	check(buttons.size() == 3, "Modal deve oferecer três ações")
+	# Clique real no próximo nível, passando pelo roteamento da interface.
+	await process_frame
+	await process_frame
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.position = buttons[1].get_global_rect().get_center()
+	click.pressed = true
+	root.push_input(click, true)
+	click.pressed = false
+	root.push_input(click, true)
+	check(current_scene.next_level_notice.visible and current_scene.overlay.visible, "Clique não exibiu aviso no modal")
+	check(not buttons[0].disabled and not buttons[2].disabled, "Aviso bloqueou outras ações")
+	await process_frame
+	await process_frame
+	var panel_rect: Rect2 = current_scene.overlay.get_child(0).get_global_rect()
+	check(root.get_visible_rect().encloses(panel_rect), "Modal com aviso ultrapassou a tela")
+	for button in buttons:
+		check(panel_rect.encloses(button.get_global_rect()), "Ação ficou fora do modal")
+	buttons[0].pressed.emit()
+	await scene_changed
+	check(not current_scene.game_over and not current_scene.overlay.visible and not current_scene.next_level_notice.visible, "Reinício manteve modal aberto")
+	check(current_scene.bricks_remaining == 15 and current_scene.bricks_destroyed == 0 and not current_scene.ball.launched, "Reinício após perda incorreto")
+	check(current_scene.paddle.is_physics_processing() and current_scene.paddle.is_processing_unhandled_input(), "Reinício não restaurou controles")
 	current_scene._return_to_menu()
 	await scene_changed
 	current_scene._on_settings_pressed()

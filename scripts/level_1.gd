@@ -8,7 +8,6 @@ const MAIN_MENU_SCENE_PATH := "res://scenes/main_menu.tscn"
 
 const SCREEN_SIZE := Vector2(720, 1280)
 
-const COLOR_HUD_TEXT := Color("76ABAE")
 const COLOR_BACKGROUND_DIM := Color(0, 0, 0, 0.1)
 
 const COLOR_PANEL_BG := Color("2B2F3A")
@@ -26,10 +25,7 @@ const WALL_THICKNESS := 24.0
 const PADDLE_SIZE := Vector2(140, 28)
 const PADDLE_Y := 1180.0
 const BALL_RADIUS := 10.0
-const STARTING_LIVES := 3
 
-var lives := STARTING_LIVES
-var score := 0
 var bricks_remaining := 0
 var bricks_destroyed := 0
 var game_over := false
@@ -40,9 +36,8 @@ var brick_layout: Array[Array] = []
 var ball: CharacterBody2D
 var paddle: CharacterBody2D
 
-var score_label: Label
-var lives_label: Label
 var destroyed_count_label: Label
+var next_level_notice: Label
 var overlay: CenterContainer
 
 
@@ -55,7 +50,6 @@ func _ready() -> void:
 	_build_paddle()
 	_build_ball()
 	_build_hud()
-	_update_hud()
 
 
 func _build_background_dim() -> void:
@@ -158,19 +152,8 @@ func _build_hud() -> void:
 	hud_layer.add_child(hud)
 	hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	score_label = Label.new()
-	score_label.position = Vector2(24, 24)
-	score_label.add_theme_font_size_override("font_size", 28)
-	score_label.add_theme_color_override("font_color", COLOR_HUD_TEXT)
-	hud.add_child(score_label)
-
-	lives_label = Label.new()
-	lives_label.position = Vector2(SCREEN_SIZE.x - 176, 24)
-	lives_label.add_theme_font_size_override("font_size", 28)
-	lives_label.add_theme_color_override("font_color", COLOR_HUD_TEXT)
-	hud.add_child(lives_label)
-
 	overlay = CenterContainer.new()
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	overlay.visible = false
 	hud.add_child(overlay)
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -204,12 +187,28 @@ func _build_end_panel() -> PanelContainer:
 	destroyed_count_label.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
 	count_box.add_child(destroyed_count_label)
 
+	var question := Label.new()
+	question.text = "O que deseja fazer?"
+	question.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	question.add_theme_font_size_override("font_size", 25)
+	question.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
+	content.add_child(question)
+
 	var actions := VBoxContainer.new()
 	actions.add_theme_constant_override("separation", 15)
-	actions.add_child(_build_pill_button("Jogar novamente", _restart_level))
-	actions.add_child(_build_pill_button("Ir para próxima fase", _on_next_level_pressed))
+	actions.add_child(_build_pill_button("Tentar de novo", _restart_level))
+	actions.add_child(_build_pill_button("Próximo nível", _on_next_level_pressed))
 	actions.add_child(_build_pill_button("Sair", _return_to_menu))
 	content.add_child(actions)
+
+	next_level_notice = Label.new()
+	next_level_notice.text = "Próximo nível ainda não disponível"
+	next_level_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	next_level_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	next_level_notice.add_theme_font_size_override("font_size", 21)
+	next_level_notice.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
+	next_level_notice.hide()
+	content.add_child(next_level_notice)
 
 	return panel
 
@@ -244,11 +243,6 @@ func _make_box_style(base_color: Color, corner_radius: int, content_padding: int
 	return style
 
 
-func _update_hud() -> void:
-	score_label.text = "Pontos: %d" % score
-	lives_label.text = "Vidas: %d" % lives
-
-
 func _unhandled_input(event: InputEvent) -> void:
 	if game_over:
 		return
@@ -259,10 +253,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_brick_destroyed(_brick) -> void:
-	score += 10
 	bricks_remaining -= 1
 	bricks_destroyed += 1
-	_update_hud()
 	if bricks_remaining <= 0:
 		_finish_level()
 
@@ -273,21 +265,17 @@ func _on_ball_hit_brick(brick) -> void:
 
 
 func _on_ball_missed() -> void:
-	if game_over:
-		return
-
-	lives = max(lives - 1, 0)
-	_update_hud()
-	if lives <= 0:
-		_finish_level()
-	else:
-		_reset_ball()
+	_finish_level()
 
 
 func _finish_level() -> void:
+	if game_over:
+		return
 	game_over = true
 	ball.reset(ball.position)
 	ball.set_physics_process(false)
+	paddle.set_physics_process(false)
+	paddle.set_process_unhandled_input(false)
 	destroyed_count_label.text = str(bricks_destroyed)
 	overlay.visible = true
 
@@ -297,8 +285,7 @@ func _restart_level() -> void:
 
 
 func _on_next_level_pressed() -> void:
-	# Ainda não há uma próxima fase implementada no projeto.
-	print("Próxima fase ainda não disponível")
+	next_level_notice.show()
 
 
 func _return_to_menu() -> void:
