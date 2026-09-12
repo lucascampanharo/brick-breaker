@@ -21,11 +21,12 @@ const BRICK_TOP_MARGIN := 160.0
 const BRICK_BOTTOM := 640.0
 const BRICK_SIDE_MARGIN := 12.0
 
-# A Fase 2 organiza os blocos em três torres separadas (1 + 2 + 1 colunas),
-# como no mockup docs/assets/imgs/fase2.png, em vez da parede única da Fase 1.
-const BRICK_ROWS := 5
-const BRICK_COLUMN_GROUPS := [1, 2, 1]
-const BRICK_GROUP_GAP := 40.0
+# A Fase 2 usa a mesma grade de linhas x colunas das configurações, mas
+# esvazia a 2ª coluna e a penúltima coluna em todas as linhas (efeito de
+# torres do mockup docs/assets/imgs/fase2.png). O tamanho e o espaçamento dos
+# blocos são calculados para a quantidade de colunas configurada, não para a
+# quantidade de colunas efetivamente preenchidas, para preservar a
+# dificuldade esperada da configuração escolhida.
 
 const WALL_THICKNESS := 24.0
 const PADDLE_SIZE := Vector2(140, 28)
@@ -87,50 +88,44 @@ func _build_wall(size: Vector2, center: Vector2) -> void:
 
 func _build_bricks() -> void:
 	bricks_remaining = 0
+	var rows := GameSettings.get_rows()
+	var columns := GameSettings.get_columns()
 	var colors := GameSettings.get_colors()
-
-	var total_columns := 0
-	for group_size in BRICK_COLUMN_GROUPS:
-		total_columns += group_size
-	var inner_gaps := total_columns - BRICK_COLUMN_GROUPS.size()
-	var group_gaps := BRICK_COLUMN_GROUPS.size() - 1
-	var available_width := SCREEN_SIZE.x - 2.0 * BRICK_SIDE_MARGIN - inner_gaps * BRICK_GAP.x - group_gaps * BRICK_GROUP_GAP
-
 	var brick_size := Vector2(
-		available_width / total_columns,
-		(BRICK_BOTTOM - BRICK_TOP_MARGIN - (BRICK_ROWS - 1) * BRICK_GAP.y) / BRICK_ROWS
+		(SCREEN_SIZE.x - 2.0 * BRICK_SIDE_MARGIN - (columns - 1) * BRICK_GAP.x) / columns,
+		(BRICK_BOTTOM - BRICK_TOP_MARGIN - (rows - 1) * BRICK_GAP.y) / rows
 	)
+	var start_x := BRICK_SIDE_MARGIN + brick_size.x / 2.0
+	var start_y := BRICK_TOP_MARGIN + brick_size.y / 2.0
 
 	brick_layout.clear()
-	for row in BRICK_ROWS:
+	for row in rows:
 		var cells: Array[int] = []
-		cells.resize(total_columns)
+		cells.resize(columns)
 		cells.fill(1)
 		brick_layout.append(cells)
 
-	var column_x: Array[float] = []
-	var x := BRICK_SIDE_MARGIN + brick_size.x / 2.0
-	for group_index in BRICK_COLUMN_GROUPS.size():
-		var group_size: int = BRICK_COLUMN_GROUPS[group_index]
-		for col_in_group in group_size:
-			column_x.append(x)
-			x += brick_size.x + BRICK_GAP.x
-		if group_index < BRICK_COLUMN_GROUPS.size() - 1:
-			x += BRICK_GROUP_GAP - BRICK_GAP.x
+	# Esvazia a 2ª coluna e a penúltima coluna em todas as linhas, mantendo o
+	# tamanho e o espaçamento calculados para a quantidade total de colunas
+	# configurada (não para a quantidade de colunas restantes).
+	var empty_columns: Array[int] = [1, columns - 2]
+	for row in rows:
+		for col in empty_columns:
+			brick_layout[row][col] = 0
 
-	for row in BRICK_ROWS:
-		for col in total_columns:
+	for row in rows:
+		for col in columns:
 			if brick_layout[row][col] == 0:
 				continue
 
 			var brick := StaticBody2D.new()
 			brick.set_script(BRICK_SCRIPT)
 			brick.position = Vector2(
-				column_x[col],
-				BRICK_TOP_MARGIN + brick_size.y / 2.0 + row * (brick_size.y + BRICK_GAP.y)
+				start_x + col * (brick_size.x + BRICK_GAP.x),
+				start_y + row * (brick_size.y + BRICK_GAP.y)
 			)
 			add_child(brick)
-			brick.setup(brick_size, colors[(row * total_columns + col) % colors.size()])
+			brick.setup(brick_size, colors[(row * columns + col) % colors.size()])
 			brick.destroyed.connect(_on_brick_destroyed)
 			bricks_remaining += 1
 

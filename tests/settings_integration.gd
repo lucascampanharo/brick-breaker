@@ -143,7 +143,7 @@ func _run() -> void:
 	click.pressed = false
 	root.push_input(click, true)
 	await scene_changed
-	check(current_scene.name == "Level2" and current_scene.bricks_remaining == 20, "Próximo nível não avançou após a derrota")
+	check(current_scene.name == "Level2" and current_scene.bricks_remaining == 9, "Próximo nível não avançou após a derrota")
 
 	current_scene._return_to_menu()
 	await scene_changed
