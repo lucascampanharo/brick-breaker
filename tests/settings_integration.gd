@@ -115,7 +115,24 @@ func _run() -> void:
 	check(current_scene.destroyed_count_label.text == "1", "Encerramento repetido alterou contagem")
 	var buttons: Array[Node] = current_scene.overlay.find_children("*", "Button", true, false)
 	check(buttons.size() == 3, "Modal deve oferecer três ações")
-	# Clique real no próximo nível, passando pelo roteamento da interface.
+	# "Tentar de novo" reinicia a fase mesmo após a derrota.
+	buttons[0].pressed.emit()
+	await scene_changed
+	check(not current_scene.game_over and not current_scene.overlay.visible, "Reinício manteve modal aberto")
+	check(current_scene.bricks_remaining == 15 and current_scene.bricks_destroyed == 0 and not current_scene.ball.launched, "Reinício após perda incorreto")
+	check(current_scene.paddle.is_physics_processing() and current_scene.paddle.is_processing_unhandled_input(), "Reinício não restaurou controles")
+
+	# Perde de novo para confirmar que "Próximo nível" segue liberado após a derrota.
+	current_scene._on_ball_hit_brick(get_nodes_in_group("bricks")[0])
+	current_scene.ball.position = Vector2(100, 1300)
+	current_scene.ball.velocity = Vector2(0, 480)
+	current_scene.ball.launched = true
+	await physics_frame
+	await physics_frame
+	check(current_scene.game_over and current_scene.overlay.visible, "Segunda derrota não abriu modal")
+	buttons = current_scene.overlay.find_children("*", "Button", true, false)
+	# Clique real no próximo nível, passando pelo roteamento da interface: deve
+	# avançar para a Fase 2 mesmo com a tentativa atual tendo sido perdida.
 	await process_frame
 	await process_frame
 	var click := InputEventMouseButton.new()
@@ -125,19 +142,9 @@ func _run() -> void:
 	root.push_input(click, true)
 	click.pressed = false
 	root.push_input(click, true)
-	check(current_scene.next_level_notice.visible and current_scene.overlay.visible, "Clique não exibiu aviso no modal")
-	check(not buttons[0].disabled and not buttons[2].disabled, "Aviso bloqueou outras ações")
-	await process_frame
-	await process_frame
-	var panel_rect: Rect2 = current_scene.overlay.get_child(0).get_global_rect()
-	check(root.get_visible_rect().encloses(panel_rect), "Modal com aviso ultrapassou a tela")
-	for button in buttons:
-		check(panel_rect.encloses(button.get_global_rect()), "Ação ficou fora do modal")
-	buttons[0].pressed.emit()
 	await scene_changed
-	check(not current_scene.game_over and not current_scene.overlay.visible and not current_scene.next_level_notice.visible, "Reinício manteve modal aberto")
-	check(current_scene.bricks_remaining == 15 and current_scene.bricks_destroyed == 0 and not current_scene.ball.launched, "Reinício após perda incorreto")
-	check(current_scene.paddle.is_physics_processing() and current_scene.paddle.is_processing_unhandled_input(), "Reinício não restaurou controles")
+	check(current_scene.name == "Level2" and current_scene.bricks_remaining == 9, "Próximo nível não avançou após a derrota")
+
 	current_scene._return_to_menu()
 	await scene_changed
 	current_scene._on_settings_pressed()

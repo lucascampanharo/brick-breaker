@@ -5,7 +5,6 @@ const PADDLE_SCRIPT := preload("res://scripts/paddle.gd")
 const BRICK_SCRIPT := preload("res://scripts/brick.gd")
 
 const MAIN_MENU_SCENE_PATH := "res://scenes/main_menu.tscn"
-const LEVEL_2_SCENE_PATH := "res://scenes/level_2.tscn"
 
 const SCREEN_SIZE := Vector2(720, 1280)
 
@@ -21,6 +20,13 @@ const BRICK_GAP := Vector2(8, 8)
 const BRICK_TOP_MARGIN := 160.0
 const BRICK_BOTTOM := 640.0
 const BRICK_SIDE_MARGIN := 12.0
+
+# A Fase 2 usa a mesma grade de linhas x colunas das configurações, mas
+# esvazia a 2ª coluna e a penúltima coluna em todas as linhas (efeito de
+# torres do mockup docs/assets/imgs/fase2.png). O tamanho e o espaçamento dos
+# blocos são calculados para a quantidade de colunas configurada, não para a
+# quantidade de colunas efetivamente preenchidas, para preservar a
+# dificuldade esperada da configuração escolhida.
 
 const WALL_THICKNESS := 24.0
 const PADDLE_SIZE := Vector2(140, 28)
@@ -38,6 +44,7 @@ var ball: CharacterBody2D
 var paddle: CharacterBody2D
 
 var destroyed_count_label: Label
+var next_level_notice: Label
 var overlay: CenterContainer
 
 
@@ -97,6 +104,14 @@ func _build_bricks() -> void:
 		cells.resize(columns)
 		cells.fill(1)
 		brick_layout.append(cells)
+
+	# Esvazia a 2ª coluna e a penúltima coluna em todas as linhas, mantendo o
+	# tamanho e o espaçamento calculados para a quantidade total de colunas
+	# configurada (não para a quantidade de colunas restantes).
+	var empty_columns: Array[int] = [1, columns - 2]
+	for row in rows:
+		for col in empty_columns:
+			brick_layout[row][col] = 0
 
 	for row in rows:
 		for col in columns:
@@ -201,6 +216,15 @@ func _build_end_panel() -> PanelContainer:
 	actions.add_child(_build_pill_button("Sair", _return_to_menu))
 	content.add_child(actions)
 
+	next_level_notice = Label.new()
+	next_level_notice.text = "Próximo nível ainda não disponível"
+	next_level_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	next_level_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	next_level_notice.add_theme_font_size_override("font_size", 21)
+	next_level_notice.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
+	next_level_notice.hide()
+	content.add_child(next_level_notice)
+
 	return panel
 
 
@@ -276,9 +300,7 @@ func _restart_level() -> void:
 
 
 func _on_next_level_pressed() -> void:
-	# Disponível mesmo após perder: o objetivo é deixar o jogador avançar de
-	# fase independentemente do resultado da tentativa atual.
-	get_tree().change_scene_to_file(LEVEL_2_SCENE_PATH)
+	next_level_notice.show()
 
 
 func _return_to_menu() -> void:
