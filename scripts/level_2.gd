@@ -5,7 +5,6 @@ const PADDLE_SCRIPT := preload("res://scripts/paddle.gd")
 const BRICK_SCRIPT := preload("res://scripts/brick.gd")
 
 const MAIN_MENU_SCENE_PATH := "res://scenes/main_menu.tscn"
-const LEVEL_2_SCENE_PATH := "res://scenes/level_2.tscn"
 
 const SCREEN_SIZE := Vector2(720, 1280)
 
@@ -21,6 +20,12 @@ const BRICK_GAP := Vector2(8, 8)
 const BRICK_TOP_MARGIN := 160.0
 const BRICK_BOTTOM := 640.0
 const BRICK_SIDE_MARGIN := 12.0
+
+# A Fase 2 organiza os blocos em três torres separadas (1 + 2 + 1 colunas),
+# como no mockup docs/assets/imgs/fase2.png, em vez da parede única da Fase 1.
+const BRICK_ROWS := 5
+const BRICK_COLUMN_GROUPS := [1, 2, 1]
+const BRICK_GROUP_GAP := 40.0
 
 const WALL_THICKNESS := 24.0
 const PADDLE_SIZE := Vector2(140, 28)
@@ -38,6 +43,7 @@ var ball: CharacterBody2D
 var paddle: CharacterBody2D
 
 var destroyed_count_label: Label
+var next_level_notice: Label
 var overlay: CenterContainer
 
 
@@ -81,36 +87,50 @@ func _build_wall(size: Vector2, center: Vector2) -> void:
 
 func _build_bricks() -> void:
 	bricks_remaining = 0
-	var rows := GameSettings.get_rows()
-	var columns := GameSettings.get_columns()
 	var colors := GameSettings.get_colors()
+
+	var total_columns := 0
+	for group_size in BRICK_COLUMN_GROUPS:
+		total_columns += group_size
+	var inner_gaps := total_columns - BRICK_COLUMN_GROUPS.size()
+	var group_gaps := BRICK_COLUMN_GROUPS.size() - 1
+	var available_width := SCREEN_SIZE.x - 2.0 * BRICK_SIDE_MARGIN - inner_gaps * BRICK_GAP.x - group_gaps * BRICK_GROUP_GAP
+
 	var brick_size := Vector2(
-		(SCREEN_SIZE.x - 2.0 * BRICK_SIDE_MARGIN - (columns - 1) * BRICK_GAP.x) / columns,
-		(BRICK_BOTTOM - BRICK_TOP_MARGIN - (rows - 1) * BRICK_GAP.y) / rows
+		available_width / total_columns,
+		(BRICK_BOTTOM - BRICK_TOP_MARGIN - (BRICK_ROWS - 1) * BRICK_GAP.y) / BRICK_ROWS
 	)
-	var start_x := BRICK_SIDE_MARGIN + brick_size.x / 2.0
-	var start_y := BRICK_TOP_MARGIN + brick_size.y / 2.0
 
 	brick_layout.clear()
-	for row in rows:
+	for row in BRICK_ROWS:
 		var cells: Array[int] = []
-		cells.resize(columns)
+		cells.resize(total_columns)
 		cells.fill(1)
 		brick_layout.append(cells)
 
-	for row in rows:
-		for col in columns:
+	var column_x: Array[float] = []
+	var x := BRICK_SIDE_MARGIN + brick_size.x / 2.0
+	for group_index in BRICK_COLUMN_GROUPS.size():
+		var group_size: int = BRICK_COLUMN_GROUPS[group_index]
+		for col_in_group in group_size:
+			column_x.append(x)
+			x += brick_size.x + BRICK_GAP.x
+		if group_index < BRICK_COLUMN_GROUPS.size() - 1:
+			x += BRICK_GROUP_GAP - BRICK_GAP.x
+
+	for row in BRICK_ROWS:
+		for col in total_columns:
 			if brick_layout[row][col] == 0:
 				continue
 
 			var brick := StaticBody2D.new()
 			brick.set_script(BRICK_SCRIPT)
 			brick.position = Vector2(
-				start_x + col * (brick_size.x + BRICK_GAP.x),
-				start_y + row * (brick_size.y + BRICK_GAP.y)
+				column_x[col],
+				BRICK_TOP_MARGIN + brick_size.y / 2.0 + row * (brick_size.y + BRICK_GAP.y)
 			)
 			add_child(brick)
-			brick.setup(brick_size, colors[(row * columns + col) % colors.size()])
+			brick.setup(brick_size, colors[(row * total_columns + col) % colors.size()])
 			brick.destroyed.connect(_on_brick_destroyed)
 			bricks_remaining += 1
 
@@ -201,6 +221,15 @@ func _build_end_panel() -> PanelContainer:
 	actions.add_child(_build_pill_button("Sair", _return_to_menu))
 	content.add_child(actions)
 
+	next_level_notice = Label.new()
+	next_level_notice.text = "Próximo nível ainda não disponível"
+	next_level_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	next_level_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	next_level_notice.add_theme_font_size_override("font_size", 21)
+	next_level_notice.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
+	next_level_notice.hide()
+	content.add_child(next_level_notice)
+
 	return panel
 
 
@@ -276,9 +305,7 @@ func _restart_level() -> void:
 
 
 func _on_next_level_pressed() -> void:
-	# Disponível mesmo após perder: o objetivo é deixar o jogador avançar de
-	# fase independentemente do resultado da tentativa atual.
-	get_tree().change_scene_to_file(LEVEL_2_SCENE_PATH)
+	next_level_notice.show()
 
 
 func _return_to_menu() -> void:
