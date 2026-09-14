@@ -25,13 +25,8 @@ const COLOR_PILL_PRESSED := Color("3B706E")
 # ============================================================
 
 const BRICK_GAP := Vector2(8, 8)
-
-# A Fase 3 começa um pouco abaixo do título.
-const BRICK_TOP_MARGIN := 260.0
-
-# Limite inferior da parede de blocos.
+const BRICK_TOP_MARGIN := 200.0
 const BRICK_BOTTOM := 720.0
-
 const BRICK_SIDE_MARGIN := 70.0
 
 # ============================================================
@@ -59,7 +54,6 @@ var paddle: CharacterBody2D
 var destroyed_count_label: Label
 var next_level_notice: Label
 var overlay: CenterContainer
-
 
 # ============================================================
 # INICIALIZAÇÃO
@@ -105,7 +99,7 @@ func _build_title() -> void:
 
 	var title := Label.new()
 
-	title.text = "Fase 3"
+	title.text = "Fase 4"
 
 	title.position = Vector2(0, 70)
 	title.size = Vector2(SCREEN_SIZE.x, 80)
@@ -160,18 +154,16 @@ func _build_wall(size: Vector2, center: Vector2) -> void:
 
 
 # ============================================================
-# BLOCOS - PADRÃO DA FASE 3
+# BLOCOS - PADRÃO DA FASE 4
 # ============================================================
 
 func _build_bricks() -> void:
 	bricks_remaining = 0
 
-	var columns := 6
 	var rows := 5
-
+	var columns := 6
 	var colors := GameSettings.get_colors()
 
-	# Mantemos a mesma lógica de dimensionamento usada no nível 2.
 	var brick_size := Vector2(
 		(
 			SCREEN_SIZE.x
@@ -188,30 +180,17 @@ func _build_bricks() -> void:
 	var start_x := BRICK_SIDE_MARGIN + brick_size.x / 2.0
 	var start_y := BRICK_TOP_MARGIN + brick_size.y / 2.0
 
-	# ========================================================
-	# MATRIZ DA FASE 3
-	#
-	# 1 = bloco
-	# 0 = espaço vazio
-	#
-	# 1 1 1 1 1 1
-	# 0 1 1 1 1 0
-	# 0 1 1 1 1 0
-	# 0 0 1 1 0 0
-	# 0 0 1 1 0 0
-	# ========================================================
-
+	# Grade exata da Fase 4 conforme o print enviado.
 	var brick_layout: Array[Array] = [
 		[1, 1, 1, 1, 1, 1],
-		[0, 1, 1, 1, 1, 0],
-		[0, 1, 1, 1, 1, 0],
-		[0, 0, 1, 1, 0, 0],
-		[0, 0, 1, 1, 0, 0]
+		[1, 1, 1, 1, 1, 0],
+		[1, 1, 1, 1, 0, 0],
+		[1, 1, 1, 0, 0, 0],
+		[1, 1, 0, 0, 0, 0]
 	]
 
 	for row in rows:
 		for col in columns:
-
 			if brick_layout[row][col] == 0:
 				continue
 
@@ -646,9 +625,7 @@ func _restart_level() -> void:
 # ============================================================
 
 func _on_next_level_pressed() -> void:
-	get_tree().change_scene_to_file(
-		"res://scenes/level_4.tscn"
-	)
+	next_level_notice.show()
 
 
 # ============================================================
