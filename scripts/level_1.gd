@@ -290,13 +290,17 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_brick_destroyed(_brick) -> void:
+	if game_over:
+		return
 	bricks_remaining -= 1
 	bricks_destroyed += 1
 	if bricks_remaining <= 0:
-		_finish_level()
+		_finish_level(true)
 
 
 func _on_ball_hit_brick(brick) -> void:
+	if game_over:
+		return
 	if brick.has_method("hit"):
 		brick.hit()
 
@@ -305,7 +309,7 @@ func _on_ball_missed() -> void:
 	_finish_level()
 
 
-func _finish_level() -> void:
+func _finish_level(won: bool = false) -> void:
 	if game_over:
 		return
 	game_over = true
@@ -313,6 +317,9 @@ func _finish_level() -> void:
 	ball.set_physics_process(false)
 	paddle.set_physics_process(false)
 	paddle.set_process_unhandled_input(false)
+	if won:
+		_on_next_level_pressed.call_deferred()
+		return
 	destroyed_count_label.text = str(bricks_destroyed)
 	overlay.visible = true
 

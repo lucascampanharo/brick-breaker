@@ -47,6 +47,8 @@ var ball: CharacterBody2D
 var paddle: CharacterBody2D
 
 var destroyed_count_label: Label
+var end_title: Label
+var restart_button: Button
 var overlay: CenterContainer
 
 
@@ -223,6 +225,7 @@ func _build_end_panel() -> PanelContainer:
 
 	var title := Label.new()
 	title.text = "Blocos destruídos"
+	end_title = title
 	var heading_font := SystemFont.new()
 	heading_font.font_names = PackedStringArray(["Arial"])
 	heading_font.font_weight = 700
@@ -253,7 +256,8 @@ func _build_end_panel() -> PanelContainer:
 
 	var actions := VBoxContainer.new()
 	actions.add_theme_constant_override("separation", 20)
-	actions.add_child(_build_pill_button("Jogar novamente", _restart_level))
+	restart_button = _build_pill_button("Jogar novamente", _restart_level)
+	actions.add_child(restart_button)
 	actions.add_child(_build_pill_button("Sair", _return_to_menu))
 	content.add_child(actions)
 
@@ -300,13 +304,17 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_brick_destroyed(_brick) -> void:
+	if game_over:
+		return
 	bricks_remaining -= 1
 	bricks_destroyed += 1
 	if bricks_remaining <= 0:
-		_finish_level()
+		_finish_level(true)
 
 
 func _on_ball_hit_brick(brick) -> void:
+	if game_over:
+		return
 	if brick.has_method("hit"):
 		brick.hit()
 
@@ -315,7 +323,7 @@ func _on_ball_missed() -> void:
 	_finish_level()
 
 
-func _finish_level() -> void:
+func _finish_level(won: bool = false) -> void:
 	if game_over:
 		return
 	game_over = true
@@ -323,6 +331,11 @@ func _finish_level() -> void:
 	ball.set_physics_process(false)
 	paddle.set_physics_process(false)
 	paddle.set_process_unhandled_input(false)
+	if won:
+		end_title.text = "Jogo concluído!"
+		restart_button.text = "Começar de novo"
+		restart_button.pressed.disconnect(_restart_level)
+		restart_button.pressed.connect(_restart_game)
 	destroyed_count_label.text = str(bricks_destroyed)
 	overlay.visible = true
 
@@ -333,3 +346,7 @@ func _restart_level() -> void:
 
 func _return_to_menu() -> void:
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)
+
+
+func _restart_game() -> void:
+	get_tree().change_scene_to_file("res://scenes/level_1.tscn")
