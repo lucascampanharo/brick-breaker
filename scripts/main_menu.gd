@@ -30,7 +30,7 @@ const COLOR_BUTTON_TEXT := Color("76ABAE")
 # ============================================================
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	var font := SystemFont.new()
 	font.font_names = PackedStringArray(["Arial"])
@@ -46,88 +46,17 @@ func _ready() -> void:
 # ============================================================
 
 func _build_content() -> void:
-
+	var center := CenterContainer.new()
+	center.name = "Center"
+	add_child(center)
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var layout := VBoxContainer.new()
-
 	layout.name = "Layout"
+	layout.add_theme_constant_override("separation", 48)
+	center.add_child(layout)
+	layout.add_child(_build_title())
+	layout.add_child(_build_menu_buttons())
 
-	layout.set_anchors_preset(
-		Control.PRESET_FULL_RECT
-	)
-
-	layout.add_theme_constant_override(
-		"separation",
-		0
-	)
-
-	add_child(layout)
-
-
-	# --------------------------------------------------------
-	# Espaço superior
-	# --------------------------------------------------------
-
-	var title_spacer_top := Control.new()
-
-	title_spacer_top.custom_minimum_size.y = 200
-	title_spacer_top.size_flags_vertical = (
-		Control.SIZE_FILL
-	)
-
-	layout.add_child(title_spacer_top)
-
-
-	# --------------------------------------------------------
-	# Título
-	# --------------------------------------------------------
-
-	layout.add_child(
-		_build_title()
-	)
-
-
-	# --------------------------------------------------------
-	# Espaço entre título e botões
-	# --------------------------------------------------------
-
-	var middle_spacer := Control.new()
-
-	middle_spacer.size_flags_vertical = (
-		Control.SIZE_FILL
-	)
-
-	middle_spacer.custom_minimum_size = Vector2(0, 200)
-
-	layout.add_child(middle_spacer)
-
-
-	# --------------------------------------------------------
-	# Botões
-	# --------------------------------------------------------
-
-	layout.add_child(
-		_build_menu_buttons()
-	)
-
-
-	# --------------------------------------------------------
-	# Espaço inferior
-	# --------------------------------------------------------
-
-	var bottom_spacer := Control.new()
-
-	bottom_spacer.size_flags_vertical = (
-		Control.SIZE_EXPAND_FILL
-	)
-
-	bottom_spacer.size_flags_stretch_ratio = 2.0
-
-	layout.add_child(bottom_spacer)
-
-
-# ============================================================
-# TÍTULO
-# ============================================================
 
 func _build_title() -> Label:
 

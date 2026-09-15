@@ -14,15 +14,15 @@ config/name="Brick Breaker"
 run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 
+[audio]
+
+driver/output_latency=10
+
 [autoload]
 
 AppBackground="*res://scripts/app_background.gd"
 GameSettings="*res://scripts/game_settings.gd"
 GameAudio="*res://scripts/game_audio.gd"
-
-[audio]
-
-driver/output_latency=10
 
 [display]
 
@@ -35,3 +35,4 @@ window/handheld/orientation=1
 [rendering]
 
 renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
