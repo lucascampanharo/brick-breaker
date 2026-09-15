@@ -78,8 +78,11 @@ func _run() -> void:
 		current_scene._on_ball_hit_brick(brick)
 		current_scene._on_ball_hit_brick(brick)
 	check(current_scene.bricks_destroyed == 15, "Contagem de destruição incorreta")
-	check(current_scene.bricks_remaining == 0 and current_scene.game_over and current_scene.overlay.visible, "Partida não encerrou")
-	current_scene._restart_level()
+	check(current_scene.bricks_remaining == 0 and current_scene.game_over and not current_scene.overlay.visible, "Vitória não iniciou avanço automático")
+	await scene_changed
+	check(current_scene.name == "Level2" and current_scene.bricks_remaining == 9, "Vitória não avançou com as preferências")
+	check(get_nodes_in_group("bricks")[0].brick_color == settings.COLOR_PALETTES[3][0], "Avanço perdeu paleta")
+	change_scene_to_file("res://scenes/level_1.tscn")
 	await scene_changed
 	check(current_scene.bricks_remaining == 15 and current_scene.bricks_destroyed == 0, "Reinício incorreto")
 	check(get_nodes_in_group("bricks")[0].brick_color == settings.COLOR_PALETTES[3][0], "Reinício perdeu paleta")

@@ -18,6 +18,11 @@ config/features=PackedStringArray("4.7", "Mobile")
 
 AppBackground="*res://scripts/app_background.gd"
 GameSettings="*res://scripts/game_settings.gd"
+GameAudio="*res://scripts/game_audio.gd"
+
+[audio]
+
+driver/output_latency=10
 
 [display]
 
