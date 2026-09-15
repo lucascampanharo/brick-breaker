@@ -7,7 +7,7 @@ const BRICK_SCRIPT := preload("res://scripts/brick.gd")
 const MAIN_MENU_SCENE_PATH := "res://scenes/main_menu.tscn"
 const LEVEL_2_SCENE_PATH := "res://scenes/level_2.tscn"
 
-const SCREEN_SIZE := Vector2(720, 1280)
+var SCREEN_SIZE := Vector2(720, 1280)
 
 const COLOR_BACKGROUND_DIM := Color(0, 0, 0, 0.0)
 
@@ -24,7 +24,7 @@ const BRICK_SIDE_MARGIN := 24.0
 
 const WALL_THICKNESS := 24.0
 const PADDLE_SIZE := Vector2(240, 14)
-const PADDLE_Y := 1155.0
+var PADDLE_Y := 1155.0
 const BALL_RADIUS := 18.0
 
 var bricks_remaining := 0
@@ -44,6 +44,9 @@ var overlay: CenterContainer
 func _ready() -> void:
 	# A imagem de fundo em si já vem do autoload AppBackground, igual à tela
 	# inicial; aqui só escurecemos um pouco para dar contraste à fase.
+	if DisplayServer.get_name() != "headless":
+		SCREEN_SIZE = get_viewport_rect().size
+		PADDLE_Y = SCREEN_SIZE.y - 125.0
 	_build_background_dim()
 	_build_walls()
 	_build_bricks()
@@ -173,7 +176,7 @@ func _build_hud() -> void:
 	back_button.expand_icon = true
 	back_button.add_theme_constant_override("icon_max_width", 64)
 	back_button.tooltip_text = "Voltar ao menu"
-	back_button.position = Vector2(44, 1190)
+	back_button.position = Vector2(44, SCREEN_SIZE.y - 90.0)
 	back_button.size = Vector2(64, 64)
 	back_button.focus_mode = Control.FOCUS_NONE
 	back_button.mouse_filter = Control.MOUSE_FILTER_STOP
