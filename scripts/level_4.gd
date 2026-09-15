@@ -625,7 +625,7 @@ func _restart_level() -> void:
 # ============================================================
 
 func _on_next_level_pressed() -> void:
-	next_level_notice.show()
+	get_tree().change_scene_to_file("res://scenes/level_5.tscn")
 
 
 # ============================================================
