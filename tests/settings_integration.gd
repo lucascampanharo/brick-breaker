@@ -41,15 +41,15 @@ func _run() -> void:
 				check(brick.get_child(0).shape.size == brick.brick_size, "Colisão diferente do tamanho visual")
 				check(brick.brick_size == bricks[0].brick_size, "Tamanhos diferentes na parede")
 				if i % columns == 0:
-					check(is_equal_approx(brick.position.x - brick.brick_size.x / 2.0, 24.0), "Margem esquerda incorreta")
+					check(is_equal_approx(brick.position.x - brick.brick_size.x / 2.0, 8.0), "Margem esquerda incorreta")
 				else:
-					check(is_equal_approx(brick.position.x - bricks[i - 1].position.x - brick.brick_size.x, 12.0), "Espaçamento horizontal incorreto")
+					check(is_equal_approx(brick.position.x - bricks[i - 1].position.x - brick.brick_size.x, 4.0), "Espaçamento horizontal incorreto")
 				if i % columns == columns - 1:
-					check(is_equal_approx(brick.position.x + brick.brick_size.x / 2.0, 696.0), "Margem direita incorreta")
+					check(is_equal_approx(brick.position.x + brick.brick_size.x / 2.0, 712.0), "Margem direita incorreta")
 				if i < columns:
 					check(is_equal_approx(brick.position.y - brick.brick_size.y / 2.0, 296.0), "Topo incorreto")
 				else:
-					check(is_equal_approx(brick.position.y - bricks[i - columns].position.y - brick.brick_size.y, 16.0), "Espaçamento vertical incorreto")
+					check(absf(brick.position.y - bricks[i - columns].position.y - brick.brick_size.y - 4.0) < 0.001, "Espaçamento vertical incorreto")
 				if i >= (rows - 1) * columns:
 					check(is_equal_approx(brick.position.y + brick.brick_size.y / 2.0, 776.0), "Base incorreta")
 			check(is_equal_approx(bricks[0].position.x + bricks[columns - 1].position.x, 720.0), "Parede descentralizada")

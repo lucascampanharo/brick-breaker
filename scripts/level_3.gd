@@ -16,10 +16,10 @@ const COLOR_PILL := Color("76ABAE")
 const COLOR_PILL_HOVER := Color("4C8D8A")
 const COLOR_PILL_PRESSED := Color("3B706E")
 
-const BRICK_GAP := Vector2(12, 16)
+const BRICK_GAP := Vector2(4, 4)
 const BRICK_TOP_MARGIN := 296.0
 const BRICK_BOTTOM := 776.0
-const BRICK_SIDE_MARGIN := 24.0
+const BRICK_SIDE_MARGIN := 8.0
 
 # Matriz de referência da Fase 3, adaptada às linhas e colunas configuradas.
 # O dimensionamento inclui os vazios para preservar o desenho da fase.

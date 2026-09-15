@@ -17,10 +17,10 @@ const COLOR_PILL := Color("76ABAE")
 const COLOR_PILL_HOVER := Color("4C8D8A")
 const COLOR_PILL_PRESSED := Color("3B706E")
 
-const BRICK_GAP := Vector2(12, 16)
+const BRICK_GAP := Vector2(4, 4)
 const BRICK_TOP_MARGIN := 296.0
 const BRICK_BOTTOM := 776.0
-const BRICK_SIDE_MARGIN := 24.0
+const BRICK_SIDE_MARGIN := 8.0
 
 const WALL_THICKNESS := 24.0
 const PADDLE_SIZE := Vector2(240, 14)

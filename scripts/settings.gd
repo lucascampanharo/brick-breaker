@@ -18,7 +18,6 @@ const COLOR_SELECTED := Color("F15A3A")
 
 var pattern_grid: GridContainer
 var color_grid: GridContainer
-var screen_size: Vector2
 
 
 # ============================================================
@@ -27,7 +26,7 @@ var screen_size: Vector2
 
 func _ready() -> void:
 
-	set_anchors_preset(
+	set_anchors_and_offsets_preset(
 		Control.PRESET_FULL_RECT
 	)
 
@@ -45,240 +44,41 @@ func _ready() -> void:
 # ============================================================
 
 func _build_screen() -> void:
+	var center := CenterContainer.new()
+	center.name = "Center"
+	add_child(center)
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var layout := VBoxContainer.new()
+	layout.name = "Layout"
+	layout.add_theme_constant_override("separation", 24)
+	center.add_child(layout)
+	layout.add_child(_build_heading("Configurações", 52))
 
-	screen_size = Vector2(720, 1280)
-	if DisplayServer.get_name() != "headless":
-		screen_size = get_viewport_rect().size
-
-	# --------------------------------------------------------
-	# TÍTULO
-	# --------------------------------------------------------
-
-	var title := Label.new()
-
-	title.text = "Configurações"
-
-	title.position = Vector2(0, 100)
-	title.size = Vector2(screen_size.x, 80)
-
-	title.horizontal_alignment = (
-		HORIZONTAL_ALIGNMENT_CENTER
-	)
-
-	title.vertical_alignment = (
-		VERTICAL_ALIGNMENT_CENTER
-	)
-
-	title.add_theme_font_size_override(
-		"font_size",
-		52
-	)
-
-	title.add_theme_color_override(
-		"font_color",
-		COLOR_TEXT
-	)
-
-	add_child(title)
-
-
-	# --------------------------------------------------------
-	# TÍTULO DOS PADRÕES
-	# --------------------------------------------------------
-
-	var pattern_title := Label.new()
-
-	pattern_title.text = "Escolha o padrão de blocos:"
-
-	pattern_title.position = Vector2(0, 230)
-	pattern_title.size = Vector2(screen_size.x, 45)
-
-	pattern_title.horizontal_alignment = (
-		HORIZONTAL_ALIGNMENT_CENTER
-	)
-
-	pattern_title.add_theme_font_size_override(
-		"font_size",
-		36
-	)
-
-	pattern_title.add_theme_color_override(
-		"font_color",
-		COLOR_TEXT
-	)
-
-	pattern_title.z_index = 1
-	pattern_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(pattern_title)
-
-
-	# --------------------------------------------------------
-	# SUBTÍTULO
-	# --------------------------------------------------------
-
-	var pattern_subtitle := Label.new()
-
-	pattern_subtitle.text = "(linhas x colunas)"
-
-	pattern_subtitle.position = Vector2(0, 268)
-	pattern_subtitle.size = Vector2(screen_size.x, 35)
-
-	pattern_subtitle.horizontal_alignment = (
-		HORIZONTAL_ALIGNMENT_CENTER
-	)
-
-	pattern_subtitle.add_theme_font_size_override(
-		"font_size",
-		26
-	)
-
-	pattern_subtitle.add_theme_color_override(
-		"font_color",
-		COLOR_TEXT
-	)
-
-	pattern_subtitle.z_index = 1
-	pattern_subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(pattern_subtitle)
-
-
-	# --------------------------------------------------------
-	# PAINEL DOS PADRÕES
-	# --------------------------------------------------------
-
-	var pattern_panel := PanelContainer.new()
-
-	pattern_panel.position = Vector2((screen_size.x - 620) / 2.0, 200)
-	pattern_panel.size = Vector2(620, 490)
-
-	pattern_panel.add_theme_stylebox_override(
-		"panel",
-		_make_panel_style()
-	)
-
-	pattern_panel.get_theme_stylebox("panel").content_margin_top = 110
-	add_child(pattern_panel)
-
-
-	# --------------------------------------------------------
-	# GRID DOS PADRÕES
-	# --------------------------------------------------------
-
+	var pattern_content := _build_section(layout, "PatternPanel")
+	var pattern_heading := VBoxContainer.new()
+	pattern_heading.add_theme_constant_override("separation", 0)
+	pattern_content.add_child(pattern_heading)
+	pattern_heading.add_child(_build_heading("Escolha o padrão de blocos:", 36))
+	pattern_heading.add_child(_build_heading("(linhas x colunas)", 26))
 	pattern_grid = GridContainer.new()
-
 	pattern_grid.columns = 5
-
-	pattern_grid.add_theme_constant_override(
-		"h_separation",
-		10
-	)
-
-	pattern_grid.add_theme_constant_override(
-		"v_separation",
-		10
-	)
-
-	pattern_grid.size_flags_horizontal = (
-		Control.SIZE_SHRINK_CENTER
-	)
-
-	pattern_grid.size_flags_vertical = (
-		Control.SIZE_SHRINK_CENTER
-	)
-
-	pattern_panel.add_child(pattern_grid)
-
-
+	pattern_grid.add_theme_constant_override("h_separation", 10)
+	pattern_grid.add_theme_constant_override("v_separation", 10)
+	pattern_grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	pattern_content.add_child(pattern_grid)
 	for pattern in GameSettings.BLOCK_PATTERNS:
-
 		_create_pattern_button(pattern)
 
-
-	# --------------------------------------------------------
-	# TÍTULO DAS CORES
-	# --------------------------------------------------------
-
-	var color_title := Label.new()
-
-	color_title.text = "Escolha o padrão de cores:"
-
-	color_title.position = Vector2(0, 745)
-	color_title.size = Vector2(screen_size.x, 50)
-
-	color_title.horizontal_alignment = (
-		HORIZONTAL_ALIGNMENT_CENTER
-	)
-
-	color_title.add_theme_font_size_override(
-		"font_size",
-		36
-	)
-
-	color_title.add_theme_color_override(
-		"font_color",
-		COLOR_TEXT
-	)
-
-	color_title.z_index = 1
-	color_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(color_title)
-
-
-	# --------------------------------------------------------
-	# PAINEL DAS CORES
-	# --------------------------------------------------------
-
-	var color_panel := PanelContainer.new()
-
-	color_panel.position = Vector2((screen_size.x - 620) / 2.0, 715)
-	color_panel.size = Vector2(620, 385)
-
-	color_panel.add_theme_stylebox_override(
-		"panel",
-		_make_panel_style()
-	)
-
-	color_panel.get_theme_stylebox("panel").content_margin_top = 80
-	add_child(color_panel)
-
-
-	# --------------------------------------------------------
-	# GRID DAS CORES
-	# --------------------------------------------------------
-
+	var color_content := _build_section(layout, "ColorPanel")
+	color_content.add_child(_build_heading("Escolha o padrão de cores:", 36))
 	color_grid = GridContainer.new()
-
 	color_grid.columns = 3
-
-	color_grid.add_theme_constant_override(
-		"h_separation",
-		12
-	)
-
-	color_grid.add_theme_constant_override(
-		"v_separation",
-		12
-	)
-
-	color_grid.size_flags_horizontal = (
-		Control.SIZE_SHRINK_CENTER
-	)
-
-	color_grid.size_flags_vertical = (
-		Control.SIZE_SHRINK_CENTER
-	)
-
-	color_panel.add_child(color_grid)
-
-
+	color_grid.add_theme_constant_override("h_separation", 12)
+	color_grid.add_theme_constant_override("v_separation", 12)
+	color_grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	color_content.add_child(color_grid)
 	for i in range(GameSettings.COLOR_PALETTES.size()):
-
 		_create_color_button(i)
-
-
-	# --------------------------------------------------------
-	# BOTÃO VOLTAR
-	# --------------------------------------------------------
 
 	var back_button := Button.new()
 
@@ -288,8 +88,6 @@ func _build_screen() -> void:
 	back_button.expand_icon = true
 	back_button.add_theme_constant_override("icon_max_width", 64)
 
-	back_button.position = Vector2(44, screen_size.y - 90)
-	back_button.size = Vector2(64, 64)
 
 	back_button.focus_mode = Control.FOCUS_NONE
 
@@ -323,6 +121,38 @@ func _build_screen() -> void:
 	)
 
 	add_child(back_button)
+	back_button.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	back_button.offset_left = 44
+	back_button.offset_top = -90
+	back_button.offset_right = 108
+	back_button.offset_bottom = -26
+
+
+# ============================================================
+# COMPONENTES DO LAYOUT
+# ============================================================
+
+func _build_heading(text: String, font_size: int) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", COLOR_TEXT)
+	return label
+
+
+func _build_section(layout: VBoxContainer, section_name: String) -> VBoxContainer:
+	var panel := PanelContainer.new()
+	panel.name = section_name
+	panel.custom_minimum_size.x = 620
+	panel.add_theme_stylebox_override("panel", _make_panel_style())
+	layout.add_child(panel)
+	var content := VBoxContainer.new()
+	content.add_theme_constant_override("separation", 24)
+	panel.add_child(content)
+	return content
 
 
 # ============================================================
