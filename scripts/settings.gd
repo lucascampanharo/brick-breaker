@@ -18,6 +18,7 @@ const COLOR_SELECTED := Color("F15A3A")
 
 var pattern_grid: GridContainer
 var color_grid: GridContainer
+var screen_size: Vector2
 
 
 # ============================================================
@@ -45,6 +46,10 @@ func _ready() -> void:
 
 func _build_screen() -> void:
 
+	screen_size = Vector2(720, 1280)
+	if DisplayServer.get_name() != "headless":
+		screen_size = get_viewport_rect().size
+
 	# --------------------------------------------------------
 	# TÍTULO
 	# --------------------------------------------------------
@@ -54,7 +59,7 @@ func _build_screen() -> void:
 	title.text = "Configurações"
 
 	title.position = Vector2(0, 100)
-	title.size = Vector2(720, 80)
+	title.size = Vector2(screen_size.x, 80)
 
 	title.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
@@ -86,7 +91,7 @@ func _build_screen() -> void:
 	pattern_title.text = "Escolha o padrão de blocos:"
 
 	pattern_title.position = Vector2(0, 230)
-	pattern_title.size = Vector2(720, 45)
+	pattern_title.size = Vector2(screen_size.x, 45)
 
 	pattern_title.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
@@ -116,7 +121,7 @@ func _build_screen() -> void:
 	pattern_subtitle.text = "(linhas x colunas)"
 
 	pattern_subtitle.position = Vector2(0, 268)
-	pattern_subtitle.size = Vector2(720, 35)
+	pattern_subtitle.size = Vector2(screen_size.x, 35)
 
 	pattern_subtitle.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
@@ -143,7 +148,7 @@ func _build_screen() -> void:
 
 	var pattern_panel := PanelContainer.new()
 
-	pattern_panel.position = Vector2(50, 200)
+	pattern_panel.position = Vector2((screen_size.x - 620) / 2.0, 200)
 	pattern_panel.size = Vector2(620, 490)
 
 	pattern_panel.add_theme_stylebox_override(
@@ -198,7 +203,7 @@ func _build_screen() -> void:
 	color_title.text = "Escolha o padrão de cores:"
 
 	color_title.position = Vector2(0, 745)
-	color_title.size = Vector2(720, 50)
+	color_title.size = Vector2(screen_size.x, 50)
 
 	color_title.horizontal_alignment = (
 		HORIZONTAL_ALIGNMENT_CENTER
@@ -225,7 +230,7 @@ func _build_screen() -> void:
 
 	var color_panel := PanelContainer.new()
 
-	color_panel.position = Vector2(50, 715)
+	color_panel.position = Vector2((screen_size.x - 620) / 2.0, 715)
 	color_panel.size = Vector2(620, 385)
 
 	color_panel.add_theme_stylebox_override(
@@ -283,7 +288,7 @@ func _build_screen() -> void:
 	back_button.expand_icon = true
 	back_button.add_theme_constant_override("icon_max_width", 64)
 
-	back_button.position = Vector2(44, 1190)
+	back_button.position = Vector2(44, screen_size.y - 90)
 	back_button.size = Vector2(64, 64)
 
 	back_button.focus_mode = Control.FOCUS_NONE
