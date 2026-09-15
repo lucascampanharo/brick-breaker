@@ -23,7 +23,10 @@ func setup(size: Vector2, color: Color) -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(-brick_size / 2.0, brick_size), brick_color)
+	var style := StyleBoxFlat.new()
+	style.bg_color = brick_color
+	style.set_corner_radius_all(int(minf(brick_size.x, brick_size.y) * 0.18))
+	draw_style_box(style, Rect2(-brick_size / 2.0, brick_size))
 
 
 func hit() -> void:

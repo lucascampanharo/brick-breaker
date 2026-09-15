@@ -18,22 +18,22 @@ var selected_pattern := "5×6"
 
 const COLOR_PALETTES := [
 	[
-		Color("A61E35"),
-		Color("F13A1D")
+		Color("8D1A2D"),
+		Color("EF3E1B")
 	],
 
 	[
-		Color("003B00"),
-		Color("286B0A")
+		Color("083B00"),
+		Color("28620F")
 	],
 
 	[
-		Color("F477B5"),
-		Color("FFE18A")
+		Color("FF80C0"),
+		Color("FFE183")
 	],
 
 	[
-		Color("B8C584"),
+		Color("A8B37C"),
 		Color("8D7C52"),
 		Color("E7A17F")
 	],
@@ -51,21 +51,24 @@ const COLOR_PALETTES := [
 	],
 
 	[
-		Color("32110D"),
-		Color("8C0B08"),
-		Color("E63114")
+		Color("300700"),
+		Color("750D00"),
+		Color("B8200C"),
+		Color("F04A17")
 	],
 
 	[
-		Color("59D9D1"),
-		Color("F0EA1D"),
-		Color("FFB36A")
+		Color("68E6DD"),
+		Color("2AC4B6"),
+		Color("FFF18C"),
+		Color("FFB86C")
 	],
 
 	[
-		Color("E98921"),
-		Color("F5BB29"),
-		Color("FFE98C")
+		Color("E48727"),
+		Color("F7CB55"),
+		Color("FFF091"),
+		Color("ADE0EE")
 	]
 ]
 

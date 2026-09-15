@@ -32,6 +32,12 @@ const COLOR_BUTTON_TEXT := Color("76ABAE")
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 
+	var font := SystemFont.new()
+	font.font_names = PackedStringArray(["Arial"])
+	font.font_weight = 700
+	theme = Theme.new()
+	theme.default_font = font
+
 	_build_content()
 
 
@@ -63,8 +69,9 @@ func _build_content() -> void:
 
 	var title_spacer_top := Control.new()
 
+	title_spacer_top.custom_minimum_size.y = 200
 	title_spacer_top.size_flags_vertical = (
-		Control.SIZE_EXPAND_FILL
+		Control.SIZE_FILL
 	)
 
 	layout.add_child(title_spacer_top)
@@ -86,10 +93,10 @@ func _build_content() -> void:
 	var middle_spacer := Control.new()
 
 	middle_spacer.size_flags_vertical = (
-		Control.SIZE_EXPAND_FILL
+		Control.SIZE_FILL
 	)
 
-	middle_spacer.custom_minimum_size = Vector2(0, 40)
+	middle_spacer.custom_minimum_size = Vector2(0, 200)
 
 	layout.add_child(middle_spacer)
 
@@ -140,7 +147,7 @@ func _build_title() -> Label:
 
 	title.add_theme_font_size_override(
 		"font_size",
-		64
+		54
 	)
 
 	title.add_theme_color_override(
@@ -167,7 +174,7 @@ func _build_menu_buttons() -> VBoxContainer:
 
 	container.add_theme_constant_override(
 		"separation",
-		24
+		26
 	)
 
 	container.size_flags_horizontal = (
@@ -209,15 +216,15 @@ func _build_menu_button(
 	button.text = label_text
 
 	button.custom_minimum_size = Vector2(
-		320,
-		80
+		440,
+		100
 	)
 
 	button.focus_mode = Control.FOCUS_NONE
 
 	button.add_theme_font_size_override(
 		"font_size",
-		32
+		42
 	)
 
 	button.add_theme_color_override(
@@ -275,10 +282,10 @@ func _make_button_style(
 
 	style.bg_color = base_color
 
-	style.corner_radius_top_left = 16
-	style.corner_radius_top_right = 16
-	style.corner_radius_bottom_left = 16
-	style.corner_radius_bottom_right = 16
+	style.corner_radius_top_left = 50
+	style.corner_radius_top_right = 50
+	style.corner_radius_bottom_left = 50
+	style.corner_radius_bottom_right = 50
 
 	return style
 

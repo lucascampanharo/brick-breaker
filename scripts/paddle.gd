@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 const SPEED := 700.0
-const COLOR := Color("76ABAE")
+const COLOR := Color("303841")
 
 var half_width := 70.0
 var min_x := 0.0
@@ -31,7 +31,10 @@ func setup(size: Vector2, screen_width: float, wall_margin: float) -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(-paddle_size / 2.0, paddle_size), COLOR)
+	var style := StyleBoxFlat.new()
+	style.bg_color = COLOR
+	style.set_corner_radius_all(int(paddle_size.y / 2.0))
+	draw_style_box(style, Rect2(-paddle_size / 2.0, paddle_size))
 
 
 func _physics_process(delta: float) -> void:
