@@ -17,18 +17,18 @@ const COLOR_PILL_HOVER := Color("4C8D8A")
 const COLOR_PILL_PRESSED := Color("3B706E")
 
 const BRICK_GAP := Vector2(8, 8)
-const BRICK_TOP_MARGIN := 160.0
-const BRICK_BOTTOM := 640.0
-const BRICK_SIDE_MARGIN := 12.0
+const BRICK_TOP_MARGIN := 290.0
+const BRICK_BOTTOM := 770.0
+const BRICK_SIDE_MARGIN := 24.0
 
-# Matriz de referência da Fase 4, adaptada às linhas e colunas configuradas.
-# O dimensionamento inclui os vazios para preservar o desenho da fase.
+# Desenho do mockup docs/assets/imgs/fase5.png, redimensionado pela grade
+# configurada. Os vazios também ocupam espaço no cálculo do tamanho dos blocos.
 const REFERENCE_LAYOUT := [
-	[1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 0],
-	[1, 1, 1, 1, 0, 0],
-	[1, 1, 1, 0, 0, 0],
-	[1, 1, 0, 0, 0, 0]
+	[1, 1, 1, 0, 1, 1],
+	[1, 0, 1, 1, 0, 1],
+	[1, 1, 0, 1, 1, 1],
+	[0, 1, 1, 1, 1, 0],
+	[1, 1, 0, 1, 1, 0]
 ]
 
 const WALL_THICKNESS := 24.0
@@ -47,7 +47,6 @@ var ball: CharacterBody2D
 var paddle: CharacterBody2D
 
 var destroyed_count_label: Label
-var next_level_notice: Label
 var overlay: CenterContainer
 
 
@@ -55,7 +54,6 @@ func _ready() -> void:
 	# A imagem de fundo em si já vem do autoload AppBackground, igual à tela
 	# inicial; aqui só escurecemos um pouco para dar contraste à fase.
 	_build_background_dim()
-	_build_title()
 	_build_walls()
 	_build_bricks()
 	_build_paddle()
@@ -69,32 +67,6 @@ func _build_background_dim() -> void:
 	dim.size = SCREEN_SIZE
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(dim)
-
-
-func _build_title() -> void:
-	var hud_layer := CanvasLayer.new()
-	add_child(hud_layer)
-
-	var hud := Control.new()
-	hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hud_layer.add_child(hud)
-
-	hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
-	var title := Label.new()
-
-	title.text = "Fase 4"
-
-	title.position = Vector2(0, 70)
-	title.size = Vector2(SCREEN_SIZE.x, 80)
-
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-
-	title.add_theme_font_size_override("font_size", 48)
-	title.add_theme_color_override("font_color", COLOR_PILL)
-
-	hud.add_child(title)
 
 
 func _build_walls() -> void:
@@ -191,6 +163,33 @@ func _build_hud() -> void:
 	hud_layer.add_child(hud)
 	hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
+	var title := Label.new()
+	title.text = "Fase 5"
+	title.position = Vector2(0, 100)
+	title.size = Vector2(SCREEN_SIZE.x, 80)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title.add_theme_font_size_override("font_size", 48)
+	title.add_theme_color_override("font_color", COLOR_PILL)
+	hud.add_child(title)
+
+	var back_button := Button.new()
+	back_button.name = "BackButton"
+	back_button.text = "←"
+	back_button.tooltip_text = "Voltar ao menu"
+	back_button.position = Vector2(40, 1200)
+	back_button.size = Vector2(64, 64)
+	back_button.focus_mode = Control.FOCUS_NONE
+	back_button.mouse_filter = Control.MOUSE_FILTER_STOP
+	back_button.add_theme_font_size_override("font_size", 42)
+	back_button.add_theme_color_override("font_color", COLOR_PANEL_BG)
+	back_button.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	back_button.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+	back_button.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
+	back_button.pressed.connect(_return_to_menu)
+	hud.add_child(back_button)
+
 	overlay = CenterContainer.new()
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	overlay.visible = false
@@ -236,18 +235,8 @@ func _build_end_panel() -> PanelContainer:
 	var actions := VBoxContainer.new()
 	actions.add_theme_constant_override("separation", 15)
 	actions.add_child(_build_pill_button("Tentar de novo", _restart_level))
-	actions.add_child(_build_pill_button("Próximo nível", _on_next_level_pressed))
 	actions.add_child(_build_pill_button("Sair", _return_to_menu))
 	content.add_child(actions)
-
-	next_level_notice = Label.new()
-	next_level_notice.text = "Próximo nível ainda não disponível"
-	next_level_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	next_level_notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	next_level_notice.add_theme_font_size_override("font_size", 21)
-	next_level_notice.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
-	next_level_notice.hide()
-	content.add_child(next_level_notice)
 
 	return panel
 
@@ -321,12 +310,6 @@ func _finish_level() -> void:
 
 func _restart_level() -> void:
 	get_tree().reload_current_scene()
-
-
-func _on_next_level_pressed() -> void:
-	get_tree().change_scene_to_file(
-		"res://scenes/level_5.tscn"
-	)
 
 
 func _return_to_menu() -> void:
