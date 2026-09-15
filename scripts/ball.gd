@@ -6,7 +6,7 @@ signal missed
 const SPEED := 480.0
 const LAUNCH_ANGLE_SPREAD := PI / 4.0
 const PADDLE_BOUNCE_ANGLE := PI / 3.0
-const COLOR := Color.WHITE
+const COLOR := Color("EEEEEE")
 
 var radius := 10.0
 var screen_size := Vector2(720, 1280)

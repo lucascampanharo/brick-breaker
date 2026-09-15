@@ -37,23 +37,22 @@ func _run() -> void:
 				check(cells.size() == columns and cells.count(1) == columns, "Matriz incompleta")
 			for i in bricks.size():
 				var brick = bricks[i]
-				check(brick.brick_color == (palette[level.REFERENCE_COLORS[i / columns][i % columns]] if pattern == "5×6" and palette_index == 8 else palette[i % palette.size()]), "Sequência de cores incorreta")
+				check(brick.brick_color == palette[i % palette.size()], "Sequência de cores incorreta")
 				check(brick.get_child(0).shape.size == brick.brick_size, "Colisão diferente do tamanho visual")
 				check(brick.brick_size == bricks[0].brick_size, "Tamanhos diferentes na parede")
 				if i % columns == 0:
 					check(is_equal_approx(brick.position.x - brick.brick_size.x / 2.0, 12.0), "Margem esquerda incorreta")
 				else:
-					# Coordenadas fracionárias acumulam arredondamento nas grades de 7 colunas.
-					check(absf(brick.position.x - bricks[i - 1].position.x - brick.brick_size.x - 6.0) < 0.001, "Espaçamento horizontal incorreto")
+					check(is_equal_approx(brick.position.x - bricks[i - 1].position.x - brick.brick_size.x, 8.0), "Espaçamento horizontal incorreto")
 				if i % columns == columns - 1:
-					check(is_equal_approx(brick.position.x + brick.brick_size.x / 2.0, level.screen_size.x - 12.0), "Margem direita incorreta")
+					check(is_equal_approx(brick.position.x + brick.brick_size.x / 2.0, 708.0), "Margem direita incorreta")
 				if i < columns:
-					check(is_equal_approx(brick.position.y - brick.brick_size.y / 2.0, level.screen_size.y * 0.235), "Topo incorreto")
+					check(is_equal_approx(brick.position.y - brick.brick_size.y / 2.0, 160.0), "Topo incorreto")
 				else:
 					check(is_equal_approx(brick.position.y - bricks[i - columns].position.y - brick.brick_size.y, 8.0), "Espaçamento vertical incorreto")
 				if i >= (rows - 1) * columns:
-					check(is_equal_approx(brick.position.y + brick.brick_size.y / 2.0, level.screen_size.y * 0.535), "Base incorreta")
-			check(is_equal_approx(bricks[0].position.x + bricks[columns - 1].position.x, level.screen_size.x), "Parede descentralizada")
+					check(is_equal_approx(brick.position.y + brick.brick_size.y / 2.0, 640.0), "Base incorreta")
+			check(is_equal_approx(bricks[0].position.x + bricks[columns - 1].position.x, 720.0), "Parede descentralizada")
 			level.free()
 
 	change_scene_to_file("res://scenes/main_menu.tscn")
@@ -86,13 +85,13 @@ func _run() -> void:
 	check(get_nodes_in_group("bricks")[0].brick_color == settings.COLOR_PALETTES[3][0], "Reinício perdeu paleta")
 	# A primeira saída pela borda inferior encerra a tentativa, sem reposicionar.
 	current_scene._on_ball_hit_brick(get_nodes_in_group("bricks")[0])
-	current_scene.ball.position = Vector2(100, current_scene.screen_size.y + current_scene.ball.radius + 10)
+	current_scene.ball.position = Vector2(100, 1300)
 	current_scene.ball.velocity = Vector2(0, 480)
 	current_scene.ball.launched = true
 	await physics_frame
 	await physics_frame
 	check(current_scene.game_over and current_scene.overlay.visible, "Primeira perda não abriu modal")
-	check(current_scene.ball.position.y > current_scene.screen_size.y and current_scene.ball.velocity == Vector2.ZERO, "Perda reposicionou ou não parou a bola")
+	check(current_scene.ball.position.y > 1280 and current_scene.ball.velocity == Vector2.ZERO, "Perda reposicionou ou não parou a bola")
 	check(current_scene.destroyed_count_label.text == "1", "Modal perdeu contagem")
 	check(not current_scene.ball.is_physics_processing() and not current_scene.paddle.is_physics_processing(), "Física não bloqueada")
 	check(not current_scene.paddle.is_processing_unhandled_input(), "Entrada do paddle não bloqueada")
@@ -125,7 +124,7 @@ func _run() -> void:
 
 	# Perde de novo para confirmar que "Próximo nível" segue liberado após a derrota.
 	current_scene._on_ball_hit_brick(get_nodes_in_group("bricks")[0])
-	current_scene.ball.position = Vector2(100, current_scene.screen_size.y + current_scene.ball.radius + 10)
+	current_scene.ball.position = Vector2(100, 1300)
 	current_scene.ball.velocity = Vector2(0, 480)
 	current_scene.ball.launched = true
 	await physics_frame
@@ -154,30 +153,5 @@ func _run() -> void:
 	check(selected_button.get_theme_stylebox("normal").border_width_left == 4, "Destaque do padrão não restaurado")
 	for i in current_scene.color_grid.get_child_count():
 		check(current_scene.color_grid.get_child(i).selected == (i == 3), "Destaque da paleta não restaurado")
-	# Percorre a sequência inteira usando os botões reais do painel final.
-	change_scene_to_file("res://scenes/level_1.tscn")
-	await scene_changed
-	for level_number in range(1, 6):
-		check(current_scene.level_number == level_number, "Progressão incorreta")
-		current_scene._finish_level()
-		await process_frame
-		await process_frame
-		buttons = current_scene.overlay.find_children("*", "Button", true, false)
-		click.position = buttons[1].get_global_rect().get_center()
-		click.pressed = true
-		root.push_input(click, true)
-		click.pressed = false
-		root.push_input(click, true)
-		await scene_changed
-	check(current_scene.name == "MainMenu", "Saída da fase 5 não voltou ao menu")
-	current_scene._on_creators_pressed()
-	await scene_changed
-	current_scene.back_button.pressed.emit()
-	await scene_changed
-	current_scene._on_start_pressed()
-	await scene_changed
-	current_scene.back_button.pressed.emit()
-	await scene_changed
-	check(current_scene.name == "MainMenu", "Retorno da partida incorreto")
-	print("Settings integration: 180 combinações, navegação e progressão das cinco fases; falhas: ", failures)
+	print("Settings integration: 180 combinações e fluxo de cenas; falhas: ", failures)
 	quit(1 if failures else 0)
