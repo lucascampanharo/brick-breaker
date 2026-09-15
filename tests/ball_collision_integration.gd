@@ -133,5 +133,7 @@ func _run() -> void:
 	check(hit_count == 1 and not targets[0].is_destroyed, "Passo longo atravessou o primeiro bloco")
 	check(ball.position.y > 390 and ball.velocity.y > 0, "Passo longo não parou no contato")
 	arena.free()
+	# O áudio pertence ao autoload e termina mesmo após liberar a arena.
+	await create_timer(0.2).timeout
 	print("Ball collision integration: impactos, teto e junção; falhas: ", failures)
 	quit(1 if failures else 0)

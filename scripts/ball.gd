@@ -37,6 +37,7 @@ func launch() -> void:
 	launched = true
 	var angle := randf_range(-LAUNCH_ANGLE_SPREAD, LAUNCH_ANGLE_SPREAD) - PI / 2.0
 	velocity = Vector2(cos(angle), sin(angle)) * SPEED
+	get_node("/root/GameAudio").play_launch()
 
 
 func reset(start_position: Vector2) -> void:
@@ -57,11 +58,13 @@ func _physics_process(delta: float) -> void:
 		if collider and collider.is_in_group("bricks"):
 			# Mesmo nas quinas, o bloco devolve a bola na direção vertical oposta.
 			velocity.y = -velocity.y
+			get_node("/root/GameAudio").play_brick_hit()
 			brick_hit.emit(collider)
 			# Não percorre o movimento restante nem atinge outro bloco neste passo.
 			return
 		elif collider and collider.is_in_group("paddle"):
 			_bounce_off_paddle(collider)
+			get_node("/root/GameAudio").play_paddle_hit()
 		else:
 			velocity = velocity.bounce(collision.get_normal())
 
