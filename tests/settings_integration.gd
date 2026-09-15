@@ -41,17 +41,17 @@ func _run() -> void:
 				check(brick.get_child(0).shape.size == brick.brick_size, "Colisão diferente do tamanho visual")
 				check(brick.brick_size == bricks[0].brick_size, "Tamanhos diferentes na parede")
 				if i % columns == 0:
-					check(is_equal_approx(brick.position.x - brick.brick_size.x / 2.0, 12.0), "Margem esquerda incorreta")
+					check(is_equal_approx(brick.position.x - brick.brick_size.x / 2.0, 24.0), "Margem esquerda incorreta")
 				else:
-					check(is_equal_approx(brick.position.x - bricks[i - 1].position.x - brick.brick_size.x, 8.0), "Espaçamento horizontal incorreto")
+					check(is_equal_approx(brick.position.x - bricks[i - 1].position.x - brick.brick_size.x, 12.0), "Espaçamento horizontal incorreto")
 				if i % columns == columns - 1:
-					check(is_equal_approx(brick.position.x + brick.brick_size.x / 2.0, 708.0), "Margem direita incorreta")
+					check(is_equal_approx(brick.position.x + brick.brick_size.x / 2.0, 696.0), "Margem direita incorreta")
 				if i < columns:
-					check(is_equal_approx(brick.position.y - brick.brick_size.y / 2.0, 160.0), "Topo incorreto")
+					check(is_equal_approx(brick.position.y - brick.brick_size.y / 2.0, 296.0), "Topo incorreto")
 				else:
-					check(is_equal_approx(brick.position.y - bricks[i - columns].position.y - brick.brick_size.y, 8.0), "Espaçamento vertical incorreto")
+					check(is_equal_approx(brick.position.y - bricks[i - columns].position.y - brick.brick_size.y, 16.0), "Espaçamento vertical incorreto")
 				if i >= (rows - 1) * columns:
-					check(is_equal_approx(brick.position.y + brick.brick_size.y / 2.0, 640.0), "Base incorreta")
+					check(is_equal_approx(brick.position.y + brick.brick_size.y / 2.0, 776.0), "Base incorreta")
 			check(is_equal_approx(bricks[0].position.x + bricks[columns - 1].position.x, 720.0), "Parede descentralizada")
 			level.free()
 
@@ -85,7 +85,7 @@ func _run() -> void:
 	check(get_nodes_in_group("bricks")[0].brick_color == settings.COLOR_PALETTES[3][0], "Reinício perdeu paleta")
 	# A primeira saída pela borda inferior encerra a tentativa, sem reposicionar.
 	current_scene._on_ball_hit_brick(get_nodes_in_group("bricks")[0])
-	current_scene.ball.position = Vector2(100, 1300)
+	current_scene.ball.position = Vector2(100, 1280 + current_scene.ball.radius + 10)
 	current_scene.ball.velocity = Vector2(0, 480)
 	current_scene.ball.launched = true
 	await physics_frame
@@ -124,7 +124,7 @@ func _run() -> void:
 
 	# Perde de novo para confirmar que "Próximo nível" segue liberado após a derrota.
 	current_scene._on_ball_hit_brick(get_nodes_in_group("bricks")[0])
-	current_scene.ball.position = Vector2(100, 1300)
+	current_scene.ball.position = Vector2(100, 1280 + current_scene.ball.radius + 10)
 	current_scene.ball.velocity = Vector2(0, 480)
 	current_scene.ball.launched = true
 	await physics_frame

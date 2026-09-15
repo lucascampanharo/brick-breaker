@@ -30,6 +30,12 @@ func _ready() -> void:
 		Control.PRESET_FULL_RECT
 	)
 
+	var font := SystemFont.new()
+	font.font_names = PackedStringArray(["Arial"])
+	font.font_weight = 700
+	theme = Theme.new()
+	theme.default_font = font
+
 	_build_screen()
 
 
@@ -47,7 +53,7 @@ func _build_screen() -> void:
 
 	title.text = "Configurações"
 
-	title.position = Vector2(0, 65)
+	title.position = Vector2(0, 100)
 	title.size = Vector2(720, 80)
 
 	title.horizontal_alignment = (
@@ -79,7 +85,7 @@ func _build_screen() -> void:
 
 	pattern_title.text = "Escolha o padrão de blocos:"
 
-	pattern_title.position = Vector2(0, 145)
+	pattern_title.position = Vector2(0, 230)
 	pattern_title.size = Vector2(720, 45)
 
 	pattern_title.horizontal_alignment = (
@@ -88,7 +94,7 @@ func _build_screen() -> void:
 
 	pattern_title.add_theme_font_size_override(
 		"font_size",
-		30
+		36
 	)
 
 	pattern_title.add_theme_color_override(
@@ -96,6 +102,8 @@ func _build_screen() -> void:
 		COLOR_TEXT
 	)
 
+	pattern_title.z_index = 1
+	pattern_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(pattern_title)
 
 
@@ -107,7 +115,7 @@ func _build_screen() -> void:
 
 	pattern_subtitle.text = "(linhas x colunas)"
 
-	pattern_subtitle.position = Vector2(0, 180)
+	pattern_subtitle.position = Vector2(0, 268)
 	pattern_subtitle.size = Vector2(720, 35)
 
 	pattern_subtitle.horizontal_alignment = (
@@ -116,7 +124,7 @@ func _build_screen() -> void:
 
 	pattern_subtitle.add_theme_font_size_override(
 		"font_size",
-		20
+		26
 	)
 
 	pattern_subtitle.add_theme_color_override(
@@ -124,6 +132,8 @@ func _build_screen() -> void:
 		COLOR_TEXT
 	)
 
+	pattern_subtitle.z_index = 1
+	pattern_subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(pattern_subtitle)
 
 
@@ -133,14 +143,15 @@ func _build_screen() -> void:
 
 	var pattern_panel := PanelContainer.new()
 
-	pattern_panel.position = Vector2(70, 215)
-	pattern_panel.size = Vector2(580, 420)
+	pattern_panel.position = Vector2(50, 200)
+	pattern_panel.size = Vector2(620, 490)
 
 	pattern_panel.add_theme_stylebox_override(
 		"panel",
 		_make_panel_style()
 	)
 
+	pattern_panel.get_theme_stylebox("panel").content_margin_top = 110
 	add_child(pattern_panel)
 
 
@@ -186,7 +197,7 @@ func _build_screen() -> void:
 
 	color_title.text = "Escolha o padrão de cores:"
 
-	color_title.position = Vector2(0, 675)
+	color_title.position = Vector2(0, 745)
 	color_title.size = Vector2(720, 50)
 
 	color_title.horizontal_alignment = (
@@ -195,7 +206,7 @@ func _build_screen() -> void:
 
 	color_title.add_theme_font_size_override(
 		"font_size",
-		30
+		36
 	)
 
 	color_title.add_theme_color_override(
@@ -203,6 +214,8 @@ func _build_screen() -> void:
 		COLOR_TEXT
 	)
 
+	color_title.z_index = 1
+	color_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(color_title)
 
 
@@ -212,14 +225,15 @@ func _build_screen() -> void:
 
 	var color_panel := PanelContainer.new()
 
-	color_panel.position = Vector2(70, 725)
-	color_panel.size = Vector2(580, 345)
+	color_panel.position = Vector2(50, 715)
+	color_panel.size = Vector2(620, 385)
 
 	color_panel.add_theme_stylebox_override(
 		"panel",
 		_make_panel_style()
 	)
 
+	color_panel.get_theme_stylebox("panel").content_margin_top = 80
 	add_child(color_panel)
 
 
@@ -265,10 +279,12 @@ func _build_screen() -> void:
 
 	back_button.name = "BackButton"
 
-	back_button.text = "←"
+	back_button.icon = preload("res://assets/icons/back.svg")
+	back_button.expand_icon = true
+	back_button.add_theme_constant_override("icon_max_width", 64)
 
-	back_button.position = Vector2(40, 1125)
-	back_button.size = Vector2(80, 80)
+	back_button.position = Vector2(44, 1190)
+	back_button.size = Vector2(64, 64)
 
 	back_button.focus_mode = Control.FOCUS_NONE
 
@@ -317,15 +333,15 @@ func _create_pattern_button(
 	button.text = pattern
 
 	button.custom_minimum_size = Vector2(
-		90,
-		70
+		100,
+		82
 	)
 
 	button.focus_mode = Control.FOCUS_NONE
 
 	button.add_theme_font_size_override(
 		"font_size",
-		25
+		36
 	)
 
 	button.add_theme_color_override(
@@ -423,8 +439,8 @@ func _create_color_button(
 	var button := ColorPaletteButton.new()
 
 	button.custom_minimum_size = Vector2(
-		170,
-		75
+		176,
+		84
 	)
 
 	button.palette = GameSettings.COLOR_PALETTES[index]
@@ -628,10 +644,15 @@ class ColorPaletteButton extends Button:
 					rect.size.y
 				)
 
-				draw_rect(
-					color_rect,
-					palette[i]
-				)
+				var style := StyleBoxFlat.new()
+				style.bg_color = palette[i]
+				if i == 0:
+					style.corner_radius_top_left = 12
+					style.corner_radius_bottom_left = 12
+				if i == palette.size() - 1:
+					style.corner_radius_top_right = 12
+					style.corner_radius_bottom_right = 12
+				draw_style_box(style, color_rect)
 
 
 		# ----------------------------------------------------
@@ -640,12 +661,11 @@ class ColorPaletteButton extends Button:
 
 		if selected:
 
-			draw_rect(
-				rect,
-				COLOR_SELECTED,
-				false,
-				4.0
-			)
+			var outline := _make_background()
+			outline.bg_color = Color.TRANSPARENT
+			outline.border_color = COLOR_SELECTED
+			outline.set_border_width_all(4)
+			draw_style_box(outline, rect)
 
 
 	func _make_background() -> StyleBoxFlat:

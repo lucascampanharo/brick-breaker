@@ -4,10 +4,10 @@ extends Control
 const TITLE_TEXT := "Criadores"
 
 const MEMBER_NAMES := [
-	"Elinéia Rita Bassani",
-	"Lucas Ferreira Gritti Campanharo",
-	"Luís Miguel Jacobus",
-	"Sanny Belisário",
+	"Elinéia Rita\nBassani",
+	"Lucas Ferreira\nGritti Campanharo",
+	"Luís Miguel\nJacobus",
+	"Sanny\nBelisário",
 ]
 
 const COLOR_TITLE := Color("76ABAE")
@@ -33,6 +33,12 @@ func _ready() -> void:
 
 	ui_scale = min(scale_x, scale_y)
 
+	var font := SystemFont.new()
+	font.font_names = PackedStringArray(["Arial"])
+	font.font_weight = 700
+	theme = Theme.new()
+	theme.default_font = font
+
 	_build_content()
 
 
@@ -43,19 +49,19 @@ func _build_content() -> void:
 
 	margin.add_theme_constant_override(
 		"margin_left",
-		int(32 * ui_scale)
+		int(72 * ui_scale)
 	)
 	margin.add_theme_constant_override(
 		"margin_top",
-		int(30 * ui_scale)
+		int(60 * ui_scale)
 	)
 	margin.add_theme_constant_override(
 		"margin_right",
-		int(32 * ui_scale)
+		int(72 * ui_scale)
 	)
 	margin.add_theme_constant_override(
 		"margin_bottom",
-		int(24 * ui_scale)
+		int(66 * ui_scale)
 	)
 
 	add_child(margin)
@@ -68,7 +74,8 @@ func _build_content() -> void:
 	margin.add_child(layout)
 
 	var top_spacer := Control.new()
-	top_spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	top_spacer.size_flags_vertical = Control.SIZE_FILL
+	top_spacer.custom_minimum_size.y = 180
 
 	layout.add_child(top_spacer)
 
@@ -80,7 +87,7 @@ func _build_content() -> void:
 
 	title.add_theme_font_size_override(
 		"font_size",
-		int(64 * ui_scale)
+		int(81 * ui_scale)
 	)
 	title.add_theme_color_override(
 		"font_color",
@@ -92,7 +99,7 @@ func _build_content() -> void:
 	var title_gap := Control.new()
 	title_gap.custom_minimum_size = Vector2(
 		0,
-		35 * ui_scale
+		135 * ui_scale
 	)
 
 	layout.add_child(title_gap)
@@ -100,7 +107,7 @@ func _build_content() -> void:
 	var members_center := CenterContainer.new()
 	members_center.name = "MembersCenter"
 	members_center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	members_center.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	members_center.size_flags_vertical = Control.SIZE_FILL
 
 	layout.add_child(members_center)
 
@@ -117,7 +124,7 @@ func _build_content() -> void:
 
 	members.add_theme_constant_override(
 		"separation",
-		int(32 * ui_scale)
+		int(72 * ui_scale)
 	)
 
 	members_center.add_child(members)
@@ -160,7 +167,7 @@ func _build_member_button(text_value: String) -> Button:
 
 	button.custom_minimum_size = Vector2(
 		0,
-		145 * ui_scale
+		225 * ui_scale
 	)
 
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -170,7 +177,7 @@ func _build_member_button(text_value: String) -> Button:
 
 	button.add_theme_font_size_override(
 		"font_size",
-		int(48 * ui_scale)
+		int(66 * ui_scale)
 	)
 
 	button.add_theme_color_override(
@@ -209,7 +216,7 @@ func _build_back_button() -> TextureButton:
 	var button_size: float = clampf(
 		get_viewport_rect().size.x * 0.10,
 		32.0,
-		52.0
+		64.0
 	)
 
 	button.custom_minimum_size = Vector2(
@@ -263,7 +270,7 @@ func _make_button_style(base_color: Color) -> StyleBoxFlat:
 	style.bg_color = base_color
 
 	var radius := int(
-		30 * ui_scale
+		60 * ui_scale
 	)
 
 	style.corner_radius_top_left = radius

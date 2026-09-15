@@ -8,18 +8,18 @@ const MAIN_MENU_SCENE_PATH := "res://scenes/main_menu.tscn"
 
 const SCREEN_SIZE := Vector2(720, 1280)
 
-const COLOR_BACKGROUND_DIM := Color(0, 0, 0, 0.1)
+const COLOR_BACKGROUND_DIM := Color(0, 0, 0, 0.0)
 
-const COLOR_PANEL_BG := Color("2B2F3A")
-const COLOR_PANEL_TEXT := Color("EEEEEE")
-const COLOR_PILL := Color("5FA8A5")
+const COLOR_PANEL_BG := Color("303841")
+const COLOR_PANEL_TEXT := Color.WHITE
+const COLOR_PILL := Color("76ABAE")
 const COLOR_PILL_HOVER := Color("4C8D8A")
 const COLOR_PILL_PRESSED := Color("3B706E")
 
-const BRICK_GAP := Vector2(8, 8)
-const BRICK_TOP_MARGIN := 160.0
-const BRICK_BOTTOM := 640.0
-const BRICK_SIDE_MARGIN := 12.0
+const BRICK_GAP := Vector2(12, 16)
+const BRICK_TOP_MARGIN := 296.0
+const BRICK_BOTTOM := 776.0
+const BRICK_SIDE_MARGIN := 24.0
 
 # A Fase 2 usa a mesma grade de linhas x colunas das configurações, mas
 # esvazia a 2ª coluna e a penúltima coluna em todas as linhas (efeito de
@@ -29,9 +29,9 @@ const BRICK_SIDE_MARGIN := 12.0
 # dificuldade esperada da configuração escolhida.
 
 const WALL_THICKNESS := 24.0
-const PADDLE_SIZE := Vector2(140, 28)
-const PADDLE_Y := 1180.0
-const BALL_RADIUS := 10.0
+const PADDLE_SIZE := Vector2(240, 14)
+const PADDLE_Y := 1155.0
+const BALL_RADIUS := 18.0
 
 var bricks_remaining := 0
 var bricks_destroyed := 0
@@ -150,7 +150,7 @@ func _build_ball() -> void:
 
 
 func _reset_ball() -> void:
-	ball.reset(paddle.position + Vector2(0, -PADDLE_SIZE.y / 2.0 - BALL_RADIUS - 2.0))
+	ball.reset(paddle.position + Vector2(0, -PADDLE_SIZE.y / 2.0 - BALL_RADIUS - 12.0))
 
 
 func _build_hud() -> void:
@@ -167,6 +167,37 @@ func _build_hud() -> void:
 	hud_layer.add_child(hud)
 	hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
+	var title := Label.new()
+	title.text = "Fase 2"
+	title.position = Vector2(0, 108)
+	title.size = Vector2(SCREEN_SIZE.x, 72)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title.add_theme_font_size_override("font_size", 52)
+	title.add_theme_color_override("font_color", COLOR_PILL)
+	var font := SystemFont.new()
+	font.font_names = PackedStringArray(["Arial"])
+	font.font_weight = 700
+	title.add_theme_font_override("font", font)
+	hud.add_child(title)
+
+	var back_button := Button.new()
+	back_button.name = "BackButton"
+	back_button.icon = preload("res://assets/icons/back.svg")
+	back_button.expand_icon = true
+	back_button.add_theme_constant_override("icon_max_width", 64)
+	back_button.tooltip_text = "Voltar ao menu"
+	back_button.position = Vector2(44, 1190)
+	back_button.size = Vector2(64, 64)
+	back_button.focus_mode = Control.FOCUS_NONE
+	back_button.mouse_filter = Control.MOUSE_FILTER_STOP
+	back_button.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	back_button.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+	back_button.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
+	back_button.pressed.connect(_return_to_menu)
+	hud.add_child(back_button)
+
 	overlay = CenterContainer.new()
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	overlay.visible = false
@@ -175,28 +206,42 @@ func _build_hud() -> void:
 
 	overlay.add_child(_build_end_panel())
 
+	var shade := ColorRect.new()
+	shade.color = Color(0, 0, 0, 0.4)
+	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud.add_child(shade)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	hud.move_child(shade, overlay.get_index())
+	shade.hide()
+	overlay.visibility_changed.connect(func(): shade.visible = overlay.visible)
+
 
 func _build_end_panel() -> PanelContainer:
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", _make_box_style(COLOR_PANEL_BG, 25, 30))
+	panel.add_theme_stylebox_override("panel", _make_box_style(COLOR_PANEL_BG, 40, 42))
 
 	var content := VBoxContainer.new()
-	content.custom_minimum_size = Vector2(297, 0)
-	content.add_theme_constant_override("separation", 21)
+	content.custom_minimum_size = Vector2(360, 0)
+	content.add_theme_constant_override("separation", 20)
 	panel.add_child(content)
 
 	var title := Label.new()
 	title.text = "Blocos destruídos"
+	var heading_font := SystemFont.new()
+	heading_font.font_names = PackedStringArray(["Arial"])
+	heading_font.font_weight = 700
+	title.add_theme_font_override("font", heading_font)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 28)
 	title.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
 	content.add_child(title)
 
 	var count_box := PanelContainer.new()
-	count_box.add_theme_stylebox_override("panel", _make_box_style(COLOR_PILL, 19, 13))
+	count_box.add_theme_stylebox_override("panel", _make_box_style(COLOR_PILL, 14, 8))
 	content.add_child(count_box)
 
 	destroyed_count_label = Label.new()
+	destroyed_count_label.add_theme_font_override("font", heading_font)
 	destroyed_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	destroyed_count_label.add_theme_font_size_override("font_size", 30)
 	destroyed_count_label.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
@@ -204,15 +249,16 @@ func _build_end_panel() -> PanelContainer:
 
 	var question := Label.new()
 	question.text = "O que deseja fazer?"
+	question.hide()
 	question.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	question.add_theme_font_size_override("font_size", 25)
 	question.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
 	content.add_child(question)
 
 	var actions := VBoxContainer.new()
-	actions.add_theme_constant_override("separation", 15)
-	actions.add_child(_build_pill_button("Tentar de novo", _restart_level))
-	actions.add_child(_build_pill_button("Próximo nível", _on_next_level_pressed))
+	actions.add_theme_constant_override("separation", 20)
+	actions.add_child(_build_pill_button("Jogar novamente", _restart_level))
+	actions.add_child(_build_pill_button("Ir para próxima fase", _on_next_level_pressed))
 	actions.add_child(_build_pill_button("Sair", _return_to_menu))
 	content.add_child(actions)
 
@@ -231,15 +277,15 @@ func _build_end_panel() -> PanelContainer:
 func _build_pill_button(label_text: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = label_text
-	button.custom_minimum_size = Vector2(0, 59)
+	button.custom_minimum_size = Vector2(0, 60)
 	button.focus_mode = Control.FOCUS_NONE
 	button.add_theme_font_size_override("font_size", 23)
 	button.add_theme_color_override("font_color", COLOR_PANEL_TEXT)
 	button.add_theme_color_override("font_hover_color", COLOR_PANEL_TEXT)
 	button.add_theme_color_override("font_pressed_color", COLOR_PANEL_TEXT)
-	button.add_theme_stylebox_override("normal", _make_box_style(COLOR_PILL, 30, 13))
-	button.add_theme_stylebox_override("hover", _make_box_style(COLOR_PILL_HOVER, 30, 13))
-	button.add_theme_stylebox_override("pressed", _make_box_style(COLOR_PILL_PRESSED, 30, 13))
+	button.add_theme_stylebox_override("normal", _make_box_style(COLOR_PILL, 14, 10))
+	button.add_theme_stylebox_override("hover", _make_box_style(COLOR_PILL_HOVER, 14, 10))
+	button.add_theme_stylebox_override("pressed", _make_box_style(COLOR_PILL_PRESSED, 14, 10))
 	button.pressed.connect(callback)
 	return button
 
